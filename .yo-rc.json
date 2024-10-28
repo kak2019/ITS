@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.4",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "gsits-frontend",
+    "libraryId": "9b820252-435d-45cc-a520-37be04406224",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "gsits-frontend",
+    "solutionShortDescription": "gsits-frontend description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

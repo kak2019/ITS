@@ -1,0 +1,24 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.gsits {
+  overflow: hidden;
+  padding: 0;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.active {
+  border-bottom: 2px solid red;
+}
+
+:global {
+
+  #workbenchPageContent,
+  .CanvasComponent.LCS.CanvasZone {
+    max-width: 100% !important;
+  }
+}
