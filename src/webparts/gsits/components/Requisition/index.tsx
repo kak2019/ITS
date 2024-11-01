@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Stack, TextField, Dropdown, Toggle, PrimaryButton, DefaultButton, DetailsList, DetailsListLayoutMode, SelectionMode, Icon, Label, Checkbox, DatePicker } from '@fluentui/react';
 import './index.css';
 
+
 // 多语言翻译对象
 const translations = {
     en: {
@@ -48,9 +49,9 @@ const Requisition: React.FC = () => {
 
     // 根据屏幕宽度调整列数
     useEffect(() => {
-        const handleResize = ():void => {
+        const handleResize = (): void => {
             const width = window.innerWidth;
-            if (width > 1200) setColumnsPerRow(5);
+            if (width > 1200) setColumnsPerRow(5.5);
             else if (width > 800) setColumnsPerRow(3);
             else setColumnsPerRow(2);
         };
@@ -59,7 +60,7 @@ const Requisition: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const itemWidth = `${100 / columnsPerRow}%`;
+    const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
     const columns = [
         { key: 'partNo', name: 'Part No.', fieldName: 'partNo', minWidth: 100 },
@@ -135,53 +136,53 @@ const Requisition: React.FC = () => {
                 <Stack tokens={{ childrenGap: 10, padding: 20 }} styles={{ root: { backgroundColor: '#E0F0FF', borderRadius: '4px' } }}>
                     <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start">
                         {/* 控制每个 Stack.Item 的宽度 */}
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
-                            <Dropdown label="Requisition Type" placeholder="Please Select" options={dropdownOptions} />
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                            <Dropdown label="Requisition Type" placeholder="Please Select" options={dropdownOptions} style={{width:Number(itemWidth)-30}} />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
-                            <TextField label="Buyer" placeholder="Entered text" />
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                            <TextField label="Buyer" placeholder="Entered text" style={{width:Number(itemWidth)-30}}/>
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
-                            <TextField label="Parma" placeholder="Placeholder text" />
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                            <TextField label="Parma" placeholder="Placeholder text" style={{width:Number(itemWidth)-30}}/>
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
-                            <TextField label="Section" placeholder="Placeholder text" />
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                            <TextField label="Section" placeholder="Placeholder text" style={{width:Number(itemWidth)-30}}/>
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
-                            <Dropdown label="Status" placeholder="Optional" options={dropdownOptions} />
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                            <Dropdown label="Status" placeholder="Optional" options={dropdownOptions} style={{width:Number(itemWidth)-30}}/>
                         </Stack.Item>
 
                         {/* 第二行 */}
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <TextField label="Part Number" placeholder="Placeholder text" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <Checkbox label="Qualifier" styles={{ root: { marginTop: 28, backgroundColor: "white", height: "30px" } }} />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <TextField label="Project" placeholder="Placeholder text" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <Dropdown label="Material User" placeholder="Optional" options={dropdownOptions} />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <Dropdown label="RFQ Number" placeholder="Optional" options={dropdownOptions} />
                         </Stack.Item>
 
                         {/* 第三行 */}
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <TextField label="Required Week From" placeholder="YYYYWW" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <TextField label="Required Week To" placeholder="YYYYWW" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <DatePicker label="Created Date From" placeholder="Select Date" ariaLabel="Select a date" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <DatePicker label="Created Date To" placeholder="Select Date" ariaLabel="Select a date" />
                         </Stack.Item>
-                        <Stack.Item grow styles={{ root: { minWidth: itemWidth, maxWidth: itemWidth } }}>
+                        <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                             <PrimaryButton text="Search" styles={{ root: { alignSelf: 'flex-end', marginTop: 28 } }} />
                         </Stack.Item>
                     </Stack>
