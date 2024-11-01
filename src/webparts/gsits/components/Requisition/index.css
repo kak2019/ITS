@@ -1,0 +1,8 @@
+.mainTitle {
+    background-color: #99CCFF;
+    padding: 10px;
+    border-radius: 4px;
+    color: #333; /* 根据需求调整字体颜色 */
+    font-size: 24px; /* 根据需求调整字体大小 */
+    margin: 0; /* 根据需求调整间距 */
+}
