@@ -11,6 +11,7 @@ import { Spinner } from '@fluentui/react';
 import Requisition from './Requisition';
 import RFQ from './RFQ';
 import PageNotFound from './PageNotFound';
+import UDUser from './UDUser';
 
 export default class Gsits extends React.Component<IGsitsProps> {
   public render(): React.ReactElement<IGsitsProps> {
@@ -39,6 +40,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <Route path='/rfq' element={<RFQ />} />
                   <Route path='*' element={<PageNotFound />} />
                   <Route path='/' element={<Navigate to="/requisition" />} />
+                  <Route path='/role' element={<UDUser />} />
                 </Routes>
               </React.Suspense>
             </section>
