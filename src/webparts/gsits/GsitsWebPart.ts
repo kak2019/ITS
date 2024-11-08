@@ -14,6 +14,7 @@ import { IGsitsProps } from './components/IGsitsProps';
 import { getSP, getGraph, getAADClient } from '../../pnpjsConfig';
 import { Logger, ConsoleListener, LogLevel } from '@pnp/logging';
 import { CONST } from '../../config/const';
+import '../../i18n';
 
 export interface IGsitsWebPartProps {
   description: string;
