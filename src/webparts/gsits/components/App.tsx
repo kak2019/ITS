@@ -12,6 +12,7 @@ import Requisition from './Requisition';
 import RFQ from './RFQ';
 import PageNotFound from './PageNotFound';
 import UDUser from './UDUser';
+import LanguageToggle from './common/LanguageToggle';
 
 export default class Gsits extends React.Component<IGsitsProps> {
   public render(): React.ReactElement<IGsitsProps> {
@@ -33,6 +34,9 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <li><NavLink to="/changeprice" className={({ isActive }) => isActive ? styles.active : ''}>Change Price</NavLink></li>
                   <li><NavLink to="/role" className={({ isActive }) => isActive ? styles.active : ''}>UD User</NavLink></li>
                 </ul>
+                <div className={styles.toggleContainer}>
+                  <LanguageToggle/>
+                </div>
               </nav>
               <React.Suspense fallback={<Spinner label='Loading...' />} >
                 <Routes>
