@@ -56,7 +56,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
               MaterialUser: item.MaterialUser,
               Project: item.Pproject,
               RequiredWeek: item.RequiredWeek,
-              CreateDate: item.CreatedDate,
+              CreateDate: stringToDate(item.CreatedDate),
               RfqNo: item.RFQNumber,
               Parma: item.Parma,
               PartDescription: item.PartDescription,
@@ -81,4 +81,12 @@ export const getAllRequisitionsAction = createAsyncThunk(
     }
   }
 );
+//#endregion
+//#region methods
+function stringToDate(dateString: string): Date {
+  const year = Number(`20${dateString.substring(0, 2)}`);
+  const month = Number(dateString.substring(2, 4));
+  const day = Number(dateString.substring(4, 6));
+  return new Date(year, month, day);
+}
 //#endregion
