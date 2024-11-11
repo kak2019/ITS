@@ -13,6 +13,7 @@ import RFQ from './RFQ';
 import PageNotFound from './PageNotFound';
 import UDUser from './UDUser';
 import LanguageToggle from './common/LanguageToggle';
+import CreateRFQ from './CreateRFQ'
 
 export default class Gsits extends React.Component<IGsitsProps> {
   public render(): React.ReactElement<IGsitsProps> {
@@ -45,6 +46,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <Route path='*' element={<PageNotFound />} />
                   <Route path='/' element={<Navigate to="/requisition" />} />
                   <Route path='/role' element={<UDUser />} />
+                  <Route path="/create-rfq" element={<CreateRFQ />} />
                 </Routes>
               </React.Suspense>
             </section>

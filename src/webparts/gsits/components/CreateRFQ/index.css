@@ -22,13 +22,14 @@
   margin: 0;
   font-size: 20px;
   font-weight: 400;
+  margin-bottom: 5px;
 }
 
-.Requisition .noMargin {
+.RFQ .noMargin {
   margin-top: 0;
 }
 
-.Requisition .ms-Viewport {
+.RFQ .ms-Viewport {
   margin-top: 0;
 }
 
