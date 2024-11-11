@@ -39,7 +39,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
             "CreatedDate",
             "RequisitionBuyer",
             "HandlerName",
-            "Buyer Full Info"
+            "BuyerFullInfo"
           )
           .top(5000)
           .skip(pageIndex * 5000)();
@@ -56,7 +56,10 @@ export const getAllRequisitionsAction = createAsyncThunk(
               MaterialUser: item.MaterialUser,
               Project: item.Pproject,
               RequiredWeek: item.RequiredWeek,
-              CreateDate: stringToDate(item.CreatedDate),
+              CreateDate:
+                item.CreatedDate === null
+                  ? null
+                  : stringToDate(item.CreatedDate),
               RfqNo: item.RFQNumber,
               Parma: item.Parma,
               PartDescription: item.PartDescription,

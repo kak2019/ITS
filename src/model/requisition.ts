@@ -9,7 +9,7 @@ export interface IRequisition {
   MaterialUser: string;
   Project: string;
   RequiredWeek: string;
-  CreateDate: Date;
+  CreateDate?: Date;
   RfqNo: string;
   Parma: string;
   PartDescription: string;

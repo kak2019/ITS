@@ -1,49 +1,126 @@
-import * as React from 'react';
-import { DetailsList, DetailsListLayoutMode, SelectionMode } from '@fluentui/react';
+import * as React from "react";
+import {
+  DetailsList,
+  DetailsListLayoutMode,
+  SelectionMode,
+} from "@fluentui/react";
+import { useRequisition } from "../../../../hooks/useRequisition";
 
-const UDUser : React.FC = () => {
-  // 假数据
+const UDUser: React.FC = () => {
+  //#region demo data
   const users = [
     {
       SupplierId: 15,
-      UserId: 'Axxxxxxxxx',
-      FirstName: 'Mats',
-      LastName: 'Engvie',
-      Email: 'mats.engvie@udtrucks.com',
-      Role: 'Business Admin',
-      UserStatus: 'Active',
-      CreatedBy: 'System',
-      CreatedDate: '2023-11-05',
+      UserId: "Axxxxxxxxx",
+      FirstName: "Mats",
+      LastName: "Engvie",
+      Email: "mats.engvie@udtrucks.com",
+      Role: "Business Admin",
+      UserStatus: "Active",
+      CreatedBy: "System",
+      CreatedDate: "2023-11-05",
     },
     {
       SupplierId: 16,
-      UserId: 'Bxxxxxxxxx',
-      FirstName: 'John',
-      LastName: 'Doe',
-      Email: 'john.doe@example.com',
-      Role: 'RPA User',
-      UserStatus: 'Inactive',
-      CreatedBy: 'System',
-      CreatedDate: '2023-10-01',
+      UserId: "Bxxxxxxxxx",
+      FirstName: "John",
+      LastName: "Doe",
+      Email: "john.doe@example.com",
+      Role: "RPA User",
+      UserStatus: "Inactive",
+      CreatedBy: "System",
+      CreatedDate: "2023-10-01",
     },
-    // 更多假数据
   ];
-
-  // 定义列
+  //#endregion
+  //#region properties
+  const [, allRequisitions, , getAllRequisitions] = useRequisition();
   const columns = [
-    { key: 'supplierid', name: 'Supplier ID', fieldName: 'SupplierId', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'userid', name: 'User ID', fieldName: 'UserId', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'firstname', name: 'First Name', fieldName: 'FirstName', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'lastname', name: 'Last Name', fieldName: 'LastName', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'email', name: 'Email', fieldName: 'Email', minWidth: 150, maxWidth: 300, isResizable: true },
-    { key: 'role', name: 'Role', fieldName: 'Role', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'userstatus', name: 'User Status', fieldName: 'UserStatus', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'createdby', name: 'Created By', fieldName: 'CreatedBy', minWidth: 100, maxWidth: 200, isResizable: true },
-    { key: 'createddate', name: 'Created Date', fieldName: 'CreatedDate', minWidth: 100, maxWidth: 200, isResizable: true },
+    {
+      key: "supplierid",
+      name: "Supplier ID",
+      fieldName: "SupplierId",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "userid",
+      name: "User ID",
+      fieldName: "UserId",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "firstname",
+      name: "First Name",
+      fieldName: "FirstName",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "lastname",
+      name: "Last Name",
+      fieldName: "LastName",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "email",
+      name: "Email",
+      fieldName: "Email",
+      minWidth: 150,
+      maxWidth: 300,
+      isResizable: true,
+    },
+    {
+      key: "role",
+      name: "Role",
+      fieldName: "Role",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "userstatus",
+      name: "User Status",
+      fieldName: "UserStatus",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "createdby",
+      name: "Created By",
+      fieldName: "CreatedBy",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
+    {
+      key: "createddate",
+      name: "Created Date",
+      fieldName: "CreatedDate",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: true,
+    },
   ];
-
+  //#endregion
+  //#region events
+  React.useEffect(() => {
+    getAllRequisitions();
+  }, []);
+  React.useEffect(() => {
+    console.log(allRequisitions);
+  }, allRequisitions);
+  //#endregion
+  //#region html
   return (
-    <div style={{ margin: '20px' }}>
+    <div style={{ margin: "20px" }}>
       <h2>User List</h2>
       <DetailsList
         items={users}
@@ -54,6 +131,7 @@ const UDUser : React.FC = () => {
       />
     </div>
   );
+  //#endregion
 };
 
 export default UDUser;

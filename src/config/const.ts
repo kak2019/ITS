@@ -9,7 +9,7 @@ export class HostSettings {
   }
 }
 const CONST = {
-  LIST_NAME_REQUISITION: "Requisitions",
+  LIST_NAME_REQUISITION: "Requisition",
   LIST_NAME_RFQ: "RFQs",
   CONFIGLIB_Name: "SiteAssets",
   SPLITTER: "; ",
