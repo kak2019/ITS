@@ -144,7 +144,7 @@ const Requisition: React.FC = () => {
                 offText="JA"
                 onChange={toggleLanguage}
             />
-            <h2 className='mainTitle'>{translations[language].title}</h2>
+            <h2 className='mainTitle' >{translations[language].title}</h2>
 
             {/* 搜索区域标题和切换图标 */}
             <Stack 

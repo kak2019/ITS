@@ -14,51 +14,50 @@ import {
   mergeStyleSets
 } from '@fluentui/react';
 
-
 const classes = mergeStyleSets({
-    uploadArea: {
-      border: '2px dashed #0078d4',
-      padding: '20px',
-      textAlign: 'center',
-      cursor: 'pointer',
-      backgroundColor: '#f3f9fc',
-    },
-    fileList: {
-      marginTop: '10px',
-    },
-    fileItem: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        borderBottom: '1px solid #e1dfdd',
-        padding: '5px 10px',
-        alignItems: 'center',
-        height: '30px'
-    },
-    oddItem: {
-        backgroundColor: '#fff',
-      },
-      evenItem: {
-        backgroundColor: '#F6F6F6',
-      },
-    title: {
-        fontWeight: 'bold'
-      }
-  });
+  uploadArea: {
+    border: '2px dashed #0078d4',
+    padding: '20px',
+    textAlign: 'center',
+    cursor: 'pointer',
+    backgroundColor: '#f3f9fc',
+  },
+  fileList: {
+    marginTop: '10px',
+  },
+  fileItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    borderBottom: '1px solid #e1dfdd',
+    padding: '5px 10px',
+    alignItems: 'center',
+    height: '30px'
+  },
+  oddItem: {
+    backgroundColor: '#fff',
+  },
+  evenItem: {
+    backgroundColor: '#F6F6F6',
+  },
+  title: {
+    fontWeight: 'bold'
+  }
+});
 
 const supplierData = [
   { name: 'Feng Chen', email: 'feng.chen@nelsongp.com', role: 'import & export', department: 'Logistics' },
   { name: 'Martin Ma', email: 'martin.ma@nelsongp.com', role: 'engineering manager', department: 'Quality' },
   { name: 'Frank Liu', email: 'frank.liu@nelsongp.com', role: 'assistant quality manager', department: 'Quality' },
-  { name: 'Martin Ma', email: 'martin.ma@nelsongp.com', role: 'engineering manager', department: 'Quality' },
-  { name: 'Martin Ma', email: 'martin.ma@nelsongp.com', role: 'engineering manager', department: 'Quality' },
+  { name: 'John Doe', email: 'john.doe@nelsongp.com', role: 'quality analyst', department: 'Quality' },
+  { name: 'Jane Smith', email: 'jane.smith@nelsongp.com', role: 'procurement specialist', department: 'Procurement' },
 ];
 
-const SupplierSelection:React.FC = ()=> {
-const [contacts, setContacts] = React.useState(Array(5).fill(null));
+const SupplierSelection: React.FC = () => {
+  const [contacts, setContacts] = React.useState<(null | { name: string; email: string })[]>(Array(5).fill(null));
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedSuppliers, setSelectedSuppliers] = React.useState(new Set());
+  const [selectedSuppliers, setSelectedSuppliers] = React.useState<Set<string>>(new Set());
 
-  const toggleSupplierSelection = (email: any):void => {
+  const toggleSupplierSelection = (email: string): void => {
     setSelectedSuppliers((prev) => {
       const newSelection = new Set(prev);
       if (newSelection.has(email)) {
@@ -70,15 +69,26 @@ const [contacts, setContacts] = React.useState(Array(5).fill(null));
     });
   };
 
-  const handleSelect = ():void => {
-    console.log(Array.from(selectedSuppliers)); // 这里可以处理已选择的供应商
+  const handleSelect = (): void => {
+    const selectedContacts = supplierData.filter(supplier => selectedSuppliers.has(supplier.email)).slice(0, 5);
+    setContacts((prevContacts) => {
+      const newContacts = [...prevContacts];
+      selectedContacts.forEach((contact, index) => {
+        if (index < newContacts.length) {
+          newContacts[index] = { name: contact.name, email: contact.email };
+        }
+      });
+      return newContacts;
+    });
     setIsOpen(false);
   };
 
-  const handleRemoveContact = (index: any):void => {
-    const newContacts = [...contacts];
-    newContacts[index] = null;
-    setContacts(newContacts);
+  const handleRemoveContact = (index: number): void => {
+    setContacts((prevContacts) => {
+      const newContacts = [...prevContacts];
+      newContacts[index] = null;
+      return newContacts;
+    });
   };
 
   const columns = [
@@ -101,7 +111,7 @@ const [contacts, setContacts] = React.useState(Array(5).fill(null));
     { key: 'column5', name: 'Department', fieldName: 'department', minWidth: 150 },
   ];
 
-  const handleAddContacts = ():void => {
+  const handleAddContacts = (): void => {
     setIsOpen(true);
   };
 
@@ -109,22 +119,22 @@ const [contacts, setContacts] = React.useState(Array(5).fill(null));
     <Stack>
       <span className={classes.title}>Supplier Contact *</span>
       <div className={classes.uploadArea} onClick={handleAddContacts}>
-        <span style={{fontWeight: 'bold'}}>+ Click to Select</span>
+        <span style={{ fontWeight: 'bold' }}>+ Click to Select</span>
         <span> (up to 5)</span>
       </div>
       <Stack className={classes.fileList}>
         {contacts.map((contact, index) => (
-          <div key={index} className={classes.fileItem + ` ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
+          <div key={index} className={`${classes.fileItem} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
             {contact ? (
               <>
-                {contact}
+                <span>{contact.name} - {contact.email}</span>
                 <IconButton
                   iconProps={{ iconName: 'Delete' }}
                   onClick={() => handleRemoveContact(index)}
                 />
               </>
             ) : (
-              <span/>
+              <span />
             )}
           </div>
         ))}

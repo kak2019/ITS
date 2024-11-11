@@ -41,11 +41,12 @@ const useStyles = mergeStyleSets({
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   title,
-  initalNum = 4,
+  initalNum = 0, // 初始文件数量为0
   uploadTitle,
   subtitle,
 }) => {
-  const [files, setFiles] = React.useState<any[]>(Array(initalNum).fill(null));
+  // 初始化为一个空数组，不包含任何文件
+  const [files, setFiles] = React.useState<File[]>([]);
   const classes = useStyles;
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -78,19 +79,20 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
           ({subtitle ?? 'File number limit: 10; Single file size limit: 10MB'})
         </label>
       </div>
-      <Stack className={classes.fileList}>
-        {files.map((file, index) => (
-          <div key={index} className={`${classes.fileItem} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
-            {file?.name || `File ${index + 1}`}
-            {file && (
+      {/* 仅当 files 数组中有文件时才显示文件列表 */}
+      {files.length > 0 && (
+        <Stack className={classes.fileList}>
+          {files.map((file, index) => (
+            <div key={index} className={`${classes.fileItem} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
+              {file.name}
               <IconButton
                 iconProps={{ iconName: 'Delete' }}
                 onClick={() => removeFile(index)}
               />
-            )}
-          </div>
-        ))}
-      </Stack>
+            </div>
+          ))}
+        </Stack>
+      )}
     </div>
   );
 };
