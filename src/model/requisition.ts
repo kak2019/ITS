@@ -1,4 +1,5 @@
-export interface IRequisition {
+export interface IRequisitionGrid {
+  ID: string;
   UniqueIdentifier: string;
   IsSelected: boolean;
   RequisitionType: string;

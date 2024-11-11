@@ -5,16 +5,16 @@ import { Caching } from "@pnp/queryable";
 import { getSP } from "../../pnpjsConfig";
 import { Logger, LogLevel } from "@pnp/logging";
 import { MESSAGE } from "../../config/message";
-import { IRequisition } from "../../model/requisition";
+import { IRequisitionGrid } from "../../model/requisition";
 
 //#region actions
 export const getAllRequisitionsAction = createAsyncThunk(
   `${FeatureKey.REQUISITIONS}/getAllRequisitions`,
-  async (): Promise<IRequisition[]> => {
+  async (): Promise<IRequisitionGrid[]> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));
     try {
-      let items: IRequisition[] = [];
+      let items: IRequisitionGrid[] = [];
       let hasNext = true;
       let pageIndex = 0;
       while (hasNext) {
@@ -46,6 +46,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
         items = items.concat(
           response.map((item) => {
             return {
+              ID: item.ID,
               UniqueIdentifier: item.Title,
               IsSelected: false,
               RequisitionType: item.RequisitionType,
@@ -68,7 +69,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
               ReqBuyer: item.RequisitionBuyer,
               HandlerName: item.HandlerName,
               BuyerFullInfo: item.BuyerFullInfo,
-            } as IRequisition;
+            } as IRequisitionGrid;
           })
         );
         hasNext = response.length === 5000;
@@ -77,7 +78,49 @@ export const getAllRequisitionsAction = createAsyncThunk(
       return items;
     } catch (err) {
       Logger.write(
-        `${CONST.LOG_SOURCE} (_readAllFilesSize) - ${JSON.stringify(err)}`,
+        `${CONST.LOG_SOURCE} (_getAllRequisitions) - ${JSON.stringify(err)}`,
+        LogLevel.Error
+      );
+      return Promise.reject(MESSAGE.retrieveDataFailed);
+    }
+  }
+);
+export const updateRequisitionAction = createAsyncThunk(
+  `${FeatureKey.REQUISITIONS}/updateRequisition`,
+  async (Requisition: IRequisitionGrid): Promise<void> => {
+    const sp = spfi(getSP());
+    const spCache = sp.using(Caching({ store: "session" }));
+    try {
+      await spCache.web.lists
+        .getByTitle(CONST.LIST_NAME_REQUISITION)
+        .items.getById(+Requisition.ID)
+        .update({
+          ID: Requisition.ID,
+          Title: Requisition.UniqueIdentifier,
+          RequisitionType: Requisition.RequisitionType,
+          Section: Requisition.Section,
+          Status: Requisition.Status,
+          PartNumber: Requisition.PartNumber,
+          Qualifier: Requisition.Qualifier,
+          MaterialUser: Requisition.MaterialUser,
+          Pproject: Requisition.Project,
+          RFQNumber: Requisition.RfqNo,
+          Parma: Requisition.Parma,
+          PartDescription: Requisition.PartDescription,
+          AnnualQty: Requisition.AnnualQty,
+          OrderQty: Requisition.OrderQty,
+          RequiredWeek: Requisition.RequiredWeek,
+          CreatedDate:
+            Requisition.CreateDate === null
+              ? null
+              : dateToString(Requisition.CreateDate!),
+          RequisitionBuyer: Requisition.ReqBuyer,
+          HandlerName: Requisition.HandlerName,
+          BuyerFullInfo: Requisition.BuyerFullInfo,
+        });
+    } catch (err) {
+      Logger.write(
+        `${CONST.LOG_SOURCE} (_updateRequisition) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
       return Promise.reject(MESSAGE.retrieveDataFailed);
@@ -91,5 +134,13 @@ function stringToDate(dateString: string): Date {
   const month = Number(dateString.substring(2, 4));
   const day = Number(dateString.substring(4, 6));
   return new Date(year, month, day);
+}
+function dateToString(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+  return `${year.toString().substring(2, 4)}${month
+    .toString()
+    .padStart(2, "0")}${day.toString().padStart(2, "0")}`;
 }
 //#endregion

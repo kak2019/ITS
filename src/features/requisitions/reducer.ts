@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { FeatureKey } from "../../config/const";
 import { initialState, RequisitionStatus } from "./requisitionsSlice";
-import { getAllRequisitionsAction } from "./action";
-import { IRequisition } from "../../model/requisition";
+import { getAllRequisitionsAction, updateRequisitionAction } from "./action";
+import { IRequisitionGrid } from "../../model/requisition";
 
 const requisitionsSlice = createSlice({
   name: FeatureKey.REQUISITIONS,
@@ -20,10 +20,20 @@ const requisitionsSlice = createSlice({
       .addCase(getAllRequisitionsAction.fulfilled, (state, action) => {
         state.status = RequisitionStatus.Idle;
         state.AllRequisitions = [
-          ...(action.payload as readonly IRequisition[]),
+          ...(action.payload as readonly IRequisitionGrid[]),
         ];
       })
       .addCase(getAllRequisitionsAction.rejected, (state, action) => {
+        state.status = RequisitionStatus.Failed;
+        state.message = action.error?.message || "";
+      })
+      .addCase(updateRequisitionAction.pending, (state, action) => {
+        state.status = RequisitionStatus.Loading;
+      })
+      .addCase(updateRequisitionAction.fulfilled, (state, action) => {
+        state.status = RequisitionStatus.Idle;
+      })
+      .addCase(updateRequisitionAction.rejected, (state, action) => {
         state.status = RequisitionStatus.Failed;
         state.message = action.error?.message || "";
       });

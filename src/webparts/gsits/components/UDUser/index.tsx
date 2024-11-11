@@ -5,6 +5,7 @@ import {
   SelectionMode,
 } from "@fluentui/react";
 import { useRequisition } from "../../../../hooks/useRequisition";
+import { IRequisitionGrid } from "../../../../model/requisition";
 
 const UDUser: React.FC = () => {
   //#region demo data
@@ -34,7 +35,8 @@ const UDUser: React.FC = () => {
   ];
   //#endregion
   //#region properties
-  const [, allRequisitions, , getAllRequisitions] = useRequisition();
+  const [, allRequisitions, , getAllRequisitions, updateRequisition] =
+    useRequisition();
   const columns = [
     {
       key: "supplierid",
@@ -117,10 +119,24 @@ const UDUser: React.FC = () => {
   React.useEffect(() => {
     console.log(allRequisitions);
   }, allRequisitions);
+  const Test = (): void => {
+    const testdata: IRequisitionGrid = JSON.parse(
+      JSON.stringify(allRequisitions[0])
+    );
+    testdata.HandlerName = "Test";
+    updateRequisition(testdata);
+  };
   //#endregion
   //#region html
   return (
     <div style={{ margin: "20px" }}>
+      <button
+        onClick={() => {
+          Test();
+        }}
+      >
+        Test
+      </button>
       <h2>User List</h2>
       <DetailsList
         items={users}

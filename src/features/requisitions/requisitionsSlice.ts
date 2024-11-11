@@ -1,4 +1,4 @@
-import { IRequisition } from "../../model/requisition";
+import { IRequisitionGrid } from "../../model/requisition";
 
 export enum RequisitionStatus {
   Idle,
@@ -9,7 +9,7 @@ export enum RequisitionStatus {
 export interface IRequisitionState {
   status: RequisitionStatus;
   message: string;
-  AllRequisitions: IRequisition[];
+  AllRequisitions: IRequisitionGrid[];
 }
 export const initialState: IRequisitionState = {
   status: RequisitionStatus.Idle,
