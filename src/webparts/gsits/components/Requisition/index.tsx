@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { IColumn } from '@fluentui/react';
 import './index.css';
 import { useTranslation } from 'react-i18next';
+import { useRequisition } from '../../../../hooks/useRequisition';
+import { Spinner, SpinnerSize } from '@fluentui/react';
+
 
 // 定义项目数据类型
 interface Item {
@@ -30,7 +33,13 @@ const Requisition: React.FC = () => {
     const [isSearchVisible, setIsSearchVisible] = useState(true);
     const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-
+    const [
+        isFetching,
+        allRequisitions,
+        ,
+        getAllRequisitions,
+        ,
+    ] = useRequisition();
     // 定义 Selection，用于 DetailsList 的选择
     const selection = new Selection({
         onSelectionChanged: () => {
@@ -64,47 +73,47 @@ const Requisition: React.FC = () => {
 
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
-    // 定义表格的列
     const columns: IColumn[] = [
-        { key: 'partNo', name: t('Part No.'), fieldName: 'partNo', minWidth: 100 },
-        { key: 'qualifier', name: t('Qualifier'), fieldName: 'qualifier', minWidth: 50 },
-        { key: 'partDescription', name: t('Part Description'), fieldName: 'partDescription', minWidth: 100 },
-        { key: 'materialUser', name: t('Material User'), fieldName: 'materialUser', minWidth: 100 },
-        { key: 'reqType', name: t('Req. Type'), fieldName: 'reqType', minWidth: 50 },
-        { key: 'annualQty', name: t('Annual Qty'), fieldName: 'annualQty', minWidth: 80 },
-        { key: 'orderQty', name: t('Order Qty'), fieldName: 'orderQty', minWidth: 80 },
-        { key: 'reqWeekFrom', name: t('Req Week From'), fieldName: 'reqWeekFrom', minWidth: 100 },
-        { key: 'createdDate', name: t('Created Date'), fieldName: 'createdDate', minWidth: 100 },
-        { key: 'rfqNo', name: t('RFQ No.'), fieldName: 'rfqNo', minWidth: 80 },
-        { key: 'reqBuyer', name: t('Req. Buyer'), fieldName: 'reqBuyer', minWidth: 80 },
-        { key: 'handlerName', name: t('Handler Name'), fieldName: 'handlerName', minWidth: 100 },
-        { key: 'status', name: t('Status'), fieldName: 'status', minWidth: 80 },
+        { key: 'PartNumber', name: t('Part No.'), fieldName: 'PartNumber', minWidth: 100 },
+        { key: 'Qualifier', name: t('Qualifier'), fieldName: 'Qualifier', minWidth: 50 },
+        { key: 'PartDescription', name: t('Part Description'), fieldName: 'PartDescription', minWidth: 100 },
+        { key: 'MaterialUser', name: t('Material User'), fieldName: 'MaterialUser', minWidth: 100 },
+        { key: 'RequisitionType', name: t('Req. Type'), fieldName: 'RequisitionType', minWidth: 50 },
+        { key: 'AnnualQty', name: t('Annual Qty'), fieldName: 'AnnualQty', minWidth: 80 },
+        { key: 'OrderQty', name: t('Order Qty'), fieldName: 'OrderQty', minWidth: 80 },
+        { key: 'RequiredWeek', name: t('Req Week From'), fieldName: 'RequiredWeek', minWidth: 100 },
+        { key: 'CreateDate', name: t('Created Date'), fieldName: 'CreateDate', minWidth: 100 },
+        { key: 'RfqNo', name: t('RFQ No.'), fieldName: 'RfqNo', minWidth: 80 },
+        { key: 'ReqBuyer', name: t('Req. Buyer'), fieldName: 'ReqBuyer', minWidth: 80 },
+        { key: 'HandlerName', name: t('Handler Name'), fieldName: 'HandlerName', minWidth: 100 },
+        { key: 'Status', name: t('Status'), fieldName: 'Status', minWidth: 80 },
     ];
-
-    // 初始化项目数据
-    const items: Item[] = new Array(10).fill(0).map((_, index) => ({
-        key: index,
-        partNo: '345678901234...',
-        qualifier: '✔',
-        partDescription: 'FLY WHEEL',
-        materialUser: '2920',
-        reqType: 'np',
-        annualQty: '999999',
-        orderQty: '999999',
-        reqWeekFrom: 'yyyymmww',
-        createdDate: 'yyyymmww',
-        rfqNo: '1234567',
-        reqBuyer: 'UDT 0001',
-        handlerName: 'UD Taro',
-        status: 'RFQ Sent',
-    }));
+    // // 初始化项目数据
+    // const items: Item[] = new Array(10).fill(0).map((_, index) => ({
+    //     key: index,
+    //     partNo: '345678901234...',
+    //     qualifier: '✔',
+    //     partDescription: 'FLY WHEEL',
+    //     materialUser: '2920',
+    //     reqType: 'np',
+    //     annualQty: '999999',
+    //     orderQty: '999999',
+    //     reqWeekFrom: 'yyyymmww',
+    //     createdDate: 'yyyymmww',
+    //     rfqNo: '1234567',
+    //     reqBuyer: 'UDT 0001',
+    //     handlerName: 'UD Taro',
+    //     status: 'RFQ Sent',
+    // }));
 
     const dropdownOptions = [
         { key: 'optional', text: 'Optional' },
         { key: 'required', text: 'Required' },
         { key: 'select', text: 'Please Select' },
     ];
-
+    useEffect(() => {
+        getAllRequisitions();
+    }, [getAllRequisitions]);
     return (
         <Stack className="Requisition" tokens={{ childrenGap: 20, padding: 20 }}>
           
@@ -190,9 +199,12 @@ const Requisition: React.FC = () => {
 
             {/* 表格和按钮区域
             <h3 className="mainTitle noMargin">{t('title')}</h3> */}
+             {isFetching ? (
+            <Spinner label={t('Loading...')} size={SpinnerSize.large} />
+        ) : (
             <DetailsList
                 className="detailList"
-                items={items}
+                items={allRequisitions}
                 columns={columns}
                 setKey="set"
                 selection={selection}
@@ -218,6 +230,7 @@ const Requisition: React.FC = () => {
                 ariaLabelForSelectAllCheckbox="Toggle selection for all items"
                 checkButtonAriaLabel="select row"
             />
+        )}
             
             {/* 底部按钮 */}
             <Stack horizontal tokens={{ childrenGap: 10, padding: 10 }}>
