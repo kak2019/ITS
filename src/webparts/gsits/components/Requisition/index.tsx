@@ -1,37 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Stack, TextField, Dropdown, Toggle, PrimaryButton, DetailsList, DetailsListLayoutMode, Icon, Label, DatePicker, Selection } from '@fluentui/react';
+import { Stack, TextField, Dropdown, PrimaryButton, DetailsList, DetailsListLayoutMode, Icon, Label, DatePicker, Selection } from '@fluentui/react';
 import { useNavigate } from 'react-router-dom';
 import { IColumn } from '@fluentui/react';
 import './index.css';
-
-// 多语言翻译对象
-const translations = {
-    en: {
-        title: "Requisition for New Part Price",
-        search: "Search",
-        rfqNo: "RFQ No.",
-        status: "Status",
-        updatedDate: "Updated Date",
-        quoteRecDate: "Quote Rec’d Date",
-        submissionDeadline: "Submission Deadline",
-        createRFQ: "Create RFQ",
-        view: "View",
-        rfqQuote: "RFQ & Quote",
-    },
-    ja: {
-        title: "新しい部品価格の申請",
-        search: "検索",
-        rfqNo: "RFQ 番号",
-        status: "ステータス",
-        updatedDate: "更新日",
-        quoteRecDate: "見積受領日",
-        submissionDeadline: "提出期限",
-        createRFQ: "RFQ 作成",
-        view: "表示",
-        rfqQuote: "RFQ & 見積",
-    }
-};
+import { useTranslation } from 'react-i18next';
 
 // 定义项目数据类型
 interface Item {
@@ -52,8 +25,8 @@ interface Item {
 }
 
 const Requisition: React.FC = () => {
+    const { t } = useTranslation(); // 使用 i18next 进行翻译
     const navigate = useNavigate();
-    const [language, setLanguage] = useState<'en' | 'ja'>('en');
     const [isSearchVisible, setIsSearchVisible] = useState(true);
     const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
     const [selectedItems, setSelectedItems] = useState<Item[]>([]);
@@ -70,10 +43,6 @@ const Requisition: React.FC = () => {
         navigate('/create-rfq', { state: { selectedItems } });
     };
 
-    // 切换语言
-    const toggleLanguage = (): void => {
-        setLanguage((prevLang) => (prevLang === 'en' ? 'ja' : 'en'));
-    };
 
     // 切换搜索区域的显示状态
     const toggleSearchVisibility = (): void => {
@@ -97,19 +66,19 @@ const Requisition: React.FC = () => {
 
     // 定义表格的列
     const columns: IColumn[] = [
-        { key: 'partNo', name: 'Part No.', fieldName: 'partNo', minWidth: 100 },
-        { key: 'qualifier', name: 'Qualifier', fieldName: 'qualifier', minWidth: 50 },
-        { key: 'partDescription', name: 'Part Description', fieldName: 'partDescription', minWidth: 100 },
-        { key: 'materialUser', name: 'Material User', fieldName: 'materialUser', minWidth: 100 },
-        { key: 'reqType', name: 'Req. Type', fieldName: 'reqType', minWidth: 50 },
-        { key: 'annualQty', name: 'Annual Qty', fieldName: 'annualQty', minWidth: 80 },
-        { key: 'orderQty', name: 'Order Qty', fieldName: 'orderQty', minWidth: 80 },
-        { key: 'reqWeekFrom', name: 'Req Week From', fieldName: 'reqWeekFrom', minWidth: 100 },
-        { key: 'createdDate', name: 'Created Date', fieldName: 'createdDate', minWidth: 100 },
-        { key: 'rfqNo', name: 'RFQ No.', fieldName: 'rfqNo', minWidth: 80 },
-        { key: 'reqBuyer', name: 'Req. Buyer', fieldName: 'reqBuyer', minWidth: 80 },
-        { key: 'handlerName', name: 'Handler Name', fieldName: 'handlerName', minWidth: 100 },
-        { key: 'status', name: 'Status', fieldName: 'status', minWidth: 80 },
+        { key: 'partNo', name: t('Part No.'), fieldName: 'partNo', minWidth: 100 },
+        { key: 'qualifier', name: t('Qualifier'), fieldName: 'qualifier', minWidth: 50 },
+        { key: 'partDescription', name: t('Part Description'), fieldName: 'partDescription', minWidth: 100 },
+        { key: 'materialUser', name: t('Material User'), fieldName: 'materialUser', minWidth: 100 },
+        { key: 'reqType', name: t('Req. Type'), fieldName: 'reqType', minWidth: 50 },
+        { key: 'annualQty', name: t('Annual Qty'), fieldName: 'annualQty', minWidth: 80 },
+        { key: 'orderQty', name: t('Order Qty'), fieldName: 'orderQty', minWidth: 80 },
+        { key: 'reqWeekFrom', name: t('Req Week From'), fieldName: 'reqWeekFrom', minWidth: 100 },
+        { key: 'createdDate', name: t('Created Date'), fieldName: 'createdDate', minWidth: 100 },
+        { key: 'rfqNo', name: t('RFQ No.'), fieldName: 'rfqNo', minWidth: 80 },
+        { key: 'reqBuyer', name: t('Req. Buyer'), fieldName: 'reqBuyer', minWidth: 80 },
+        { key: 'handlerName', name: t('Handler Name'), fieldName: 'handlerName', minWidth: 100 },
+        { key: 'status', name: t('Status'), fieldName: 'status', minWidth: 80 },
     ];
 
     // 初始化项目数据
@@ -138,13 +107,8 @@ const Requisition: React.FC = () => {
 
     return (
         <Stack className="Requisition" tokens={{ childrenGap: 20, padding: 20 }}>
-            <Toggle
-                label="Language"
-                onText="EN"
-                offText="JA"
-                onChange={toggleLanguage}
-            />
-            <h2 className='mainTitle' >{translations[language].title}</h2>
+          
+            <h2 className='mainTitle' >{t('Requisition for New Part Price')}</h2>
 
             {/* 搜索区域标题和切换图标 */}
             <Stack 
@@ -164,7 +128,7 @@ const Requisition: React.FC = () => {
                 onClick={toggleSearchVisibility}
             >
                 <Icon iconName={isSearchVisible ? "ChevronDown" : "ChevronRight"} style={{ fontSize: 16 }} />
-                <Label styles={{ root: { fontWeight: 'bold' } }}>{translations[language].search}</Label>
+                <Label styles={{ root: { fontWeight: 'bold' } }}>{t('Search')}</Label>
             </Stack>
 
             {/* 搜索区域 */}
@@ -224,8 +188,8 @@ const Requisition: React.FC = () => {
                 </Stack>
             )}
 
-            {/* 表格和按钮区域 */}
-            <h3 className="mainTitle noMargin">{translations[language].title}</h3>
+            {/* 表格和按钮区域
+            <h3 className="mainTitle noMargin">{t('title')}</h3> */}
             <DetailsList
                 className="detailList"
                 items={items}
@@ -258,7 +222,7 @@ const Requisition: React.FC = () => {
             {/* 底部按钮 */}
             <Stack horizontal tokens={{ childrenGap: 10, padding: 10 }}>
                 <PrimaryButton
-                    text={translations[language].createRFQ}
+                    text={t('CreateRFQ')}
                     styles={{root: {border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black'}}}
                     onClick={handleCreateRFQ}
                 />

@@ -32,6 +32,15 @@ nav ul li a:hover {
     display: none;
 }
 
-div[data-automation-id="contentScrollRegion"] {
+/* div[data-automation-id="contentScrollRegion"] {
     overflow: hidden;
+} */
+div[data-automation-id="contentScrollRegion"] {
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+}
+
+div[data-automation-id="contentScrollRegion"]::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
 }

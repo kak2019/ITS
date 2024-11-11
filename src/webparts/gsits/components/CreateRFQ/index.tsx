@@ -1,49 +1,19 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Stack, TextField, Dropdown, Toggle, DetailsList, DetailsListLayoutMode, DatePicker } from '@fluentui/react';
+import { Stack, TextField, Dropdown, DetailsList, DetailsListLayoutMode, DatePicker } from '@fluentui/react';
 import './index.css';
 import FileUploader from './upload';
 import SupplierSelection from './select';
+import { useTranslation } from 'react-i18next';
 
 
-// 多语言翻译对象
-const translations = {
-    en: {
-        title: "New Parts RFQ Creation",
-        subtitle: 'Selected Parts',
-        search: "Search",
-        rfqNo: "RFQ No.",
-        status: "Status",
-        updatedDate: "Updated Date",
-        quoteRecDate: "Quote Rec’d Date",
-        submissionDeadline: "Submission Deadline",
-        createRFQ: "Create RFQ",
-        view: "View",
-        rfqQuote: "RFQ & Quote",
-    },
-    ja: {
-        title: "新しい部品価格の申請",
-        subtitle: 'Selected Parts',
-        search: "検索",
-        rfqNo: "RFQ 番号",
-        status: "ステータス",
-        updatedDate: "更新日",
-        quoteRecDate: "見積受領日",
-        submissionDeadline: "提出期限",
-        createRFQ: "RFQ 作成",
-        view: "表示",
-        rfqQuote: "RFQ & 見積",
-    }
-};
+
 
 const Requisition: React.FC = () => {
-    const [language, setLanguage] = useState<'en' | 'ja'>('en');
+    const { t } = useTranslation(); // 使用 i18next 进行翻译
     const [columnsPerRow, setColumnsPerRow] = useState(5); // 默认每行5列
 
-    // 切换语言
-    const toggleLanguage = (): void => {
-        setLanguage((prevLang) => (prevLang === 'en' ? 'ja' : 'en'));
-    };
+
 
     // 根据屏幕宽度调整列数
     useEffect(() => {
@@ -61,19 +31,19 @@ const Requisition: React.FC = () => {
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
     const columns = [
-        { key: 'partNo', name: 'Part No.', fieldName: 'partNo', minWidth: 100 },
-        { key: 'qualifier', name: 'Qualifier', fieldName: 'qualifier', minWidth: 50 },
-        { key: 'partDescription', name: 'Part Description', fieldName: 'partDescription', minWidth: 100 },
-        { key: 'materialUser', name: 'Material User', fieldName: 'materialUser', minWidth: 100 },
-        { key: 'reqType', name: 'Req. Type', fieldName: 'reqType', minWidth: 50 },
-        { key: 'annualQty', name: 'Annual Qty', fieldName: 'annualQty', minWidth: 80 },
-        { key: 'orderQty', name: 'Order Qty', fieldName: 'orderQty', minWidth: 80 },
-        { key: 'reqWeekFrom', name: 'Req Week From', fieldName: 'reqWeekFrom', minWidth: 100 },
-        { key: 'createdDate', name: 'Created Date', fieldName: 'createdDate', minWidth: 100 },
-        { key: 'rfqNo', name: 'RFQ No.', fieldName: 'rfqNo', minWidth: 80 },
-        { key: 'reqBuyer', name: 'Req. Buyer', fieldName: 'reqBuyer', minWidth: 80 },
-        { key: 'handlerName', name: 'Handler Name', fieldName: 'handlerName', minWidth: 100 },
-        { key: 'status', name: 'Status', fieldName: 'status', minWidth: 80 },
+        { key: 'partNo', name: t('Part No.'), fieldName: 'partNo', minWidth: 100 },
+        { key: 'qualifier', name: t('Qualifier'), fieldName: 'qualifier', minWidth: 50 },
+        { key: 'partDescription', name: t('Part Description'), fieldName: 'partDescription', minWidth: 100 },
+        { key: 'materialUser', name: t('Material User'), fieldName: 'materialUser', minWidth: 100 },
+        { key: 'reqType', name: t('Req. Type'), fieldName: 'reqType', minWidth: 50 },
+        { key: 'annualQty', name: t('Annual Qty'), fieldName: 'annualQty', minWidth: 80 },
+        { key: 'orderQty', name: t('Order Qty'), fieldName: 'orderQty', minWidth: 80 },
+        { key: 'reqWeekFrom', name: t('Req Week From'), fieldName: 'reqWeekFrom', minWidth: 100 },
+        { key: 'createdDate', name: t('Created Date'), fieldName: 'createdDate', minWidth: 100 },
+        { key: 'rfqNo', name: t('RFQ No.'), fieldName: 'rfqNo', minWidth: 80 },
+        { key: 'reqBuyer', name: t('Req. Buyer'), fieldName: 'reqBuyer', minWidth: 80 },
+        { key: 'handlerName', name: t('Handler Name'), fieldName: 'handlerName', minWidth: 100 },
+        { key: 'status', name: t('Status'), fieldName: 'status', minWidth: 80 },
     ];
 
     const items = new Array(10).fill(0).map((_, index) => ({
@@ -101,13 +71,7 @@ const Requisition: React.FC = () => {
 
     return (
         <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
-            <Toggle
-                label="Language"
-                onText="EN"
-                offText="JA"
-                onChange={toggleLanguage}
-            />
-            <h2 className='mainTitle'>{translations[language].title}</h2>
+            <h2 className='mainTitle'>{t("New Parts RFQ Creation")}</h2>
             <Stack className='noMargin' horizontal tokens={{ childrenGap: 30, padding: 20 }} styles={{ root: { backgroundColor: '#CCEEFF', borderRadius: '4px',marginBottom: '5px', alignItems: 'flex-start' } }} >
                 <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start" styles={{ root: { width: '50%' } }}>
                     {/* 控制每个 Stack.Item 的宽度 */}
@@ -139,7 +103,7 @@ const Requisition: React.FC = () => {
             </Stack>
 
            {/* 表格和按钮区域 */}
-           <h3 className="mainTitle noMargin">{translations[language].subtitle}</h3>
+           <h3 className="mainTitle noMargin">{t("Selected Parts")}</h3>
             <DetailsList
                 className="detailList"
                 items={items}
