@@ -7,13 +7,15 @@ const webpack = require('webpack');
 build.configureWebpack.mergeConfig({
   additionalConfiguration: function (config) {
     let azureFunctionBaseUrl = process.env.AzureFunctionBaseUrl;
-    let aadClientId = process.env.aadClientId;
+    let aadClientId = process.env.AadClientId;
+    let appInsightsKey= process.env.AppInsightsKey;
     let defineOptions = {};
     if (azureFunctionBaseUrl && aadClientId) {
       console.log('*****************  Applying production settings to webpack   ****************');
       defineOptions = {
         'azureFunctionBaseUrl': JSON.stringify(azureFunctionBaseUrl),
         'aadClientId': JSON.stringify(aadClientId),
+        'appInsightsKey': JSON.stringify(appInsightsKey)
       }
     }
     else {
@@ -21,6 +23,7 @@ build.configureWebpack.mergeConfig({
       defineOptions = {
         'azureFunctionBaseUrl': JSON.stringify('https://func-ud-hanyu-dev.azurewebsites.net'),
         'aadClientId': JSON.stringify('265e00af-ca5d-4248-9a2c-10da0f408f78'),
+        'appInsightsKey': JSON.stringify('f5a5f8dc-a849-4e1a-af8b-5cce4da248e4')
       }
     }
     var gsitsConfig = {

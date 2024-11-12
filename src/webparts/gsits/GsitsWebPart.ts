@@ -15,6 +15,7 @@ import { getSP, getGraph, getAADClient } from '../../pnpjsConfig';
 import { Logger, ConsoleListener, LogLevel } from '@pnp/logging';
 import { CONST } from '../../config/const';
 import '../../i18n';
+import { AppInsightsService } from '../../config/AppInsightsService';
 
 export interface IGsitsWebPartProps {
   description: string;
@@ -54,6 +55,9 @@ export default class GsitsWebPart extends BaseClientSideWebPart<IGsitsWebPartPro
     getSP(this.context);
     getGraph(this.context);
     getAADClient(this.context);
+    if (CONST.appInsightsKey)
+      AppInsightsService.InitializeInstance(CONST.LOG_SOURCE, CONST.appInsightsKey, this.context.pageContext.user.email);
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     }).then(_ => {

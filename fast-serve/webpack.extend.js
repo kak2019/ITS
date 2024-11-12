@@ -6,7 +6,8 @@
 const webpack = require('webpack');
 
 let azureFunctionBaseUrl = process.env.AzureFunctionBaseUrl;
-let aadClientId = process.env.aadClientId;
+let aadClientId = process.env.AadClientId;
+let appInsightsKey= process.env.AppInsightsKey;
 
 let defineOptions = {};
 
@@ -15,12 +16,14 @@ if (azureFunctionBaseUrl && aadClientId) {
   defineOptions = {
     'azureFunctionBaseUrl': JSON.stringify(azureFunctionBaseUrl),
     'aadClientId': JSON.stringify(aadClientId),
+    'appInsightsKey': JSON.stringify(appInsightsKey)
   }
 } else {
   // specify dev settings here
   defineOptions = {
     'azureFunctionBaseUrl': JSON.stringify('https://func-api-financialsrvc-ud-dev.azurewebsites.net'),
-    'aadClientId': JSON.stringify('f8b4e9e3-26f6-4307-888b-b77569acb0a5')
+    'aadClientId': JSON.stringify('f8b4e9e3-26f6-4307-888b-b77569acb0a5'),
+    'appInsightsKey': JSON.stringify('f5a5f8dc-a849-4e1a-af8b-5cce4da248e4')
   }
 }
 

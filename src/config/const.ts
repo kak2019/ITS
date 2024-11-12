@@ -1,11 +1,15 @@
 declare let azureFunctionBaseUrl: string;
 declare let aadClientId: string;
+declare let appInsightsKey: string;
 export class HostSettings {
   public static get AzureHost(): string {
     return azureFunctionBaseUrl;
   }
   public static get AadClientId(): string {
     return aadClientId;
+  }
+  public static get AppInsightsKey():string {
+    return appInsightsKey;
   }
 }
 const CONST = {
@@ -17,6 +21,7 @@ const CONST = {
   LIBRARY_NAME: "Documents",
   azureFunctionBaseUrl: HostSettings.AzureHost,
   aadClientId: HostSettings.AadClientId,
+  appInsightsKey:HostSettings.AppInsightsKey,
 };
 /**
  * State feature key (prefix of action name)
