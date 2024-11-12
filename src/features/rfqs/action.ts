@@ -7,6 +7,7 @@ import { Logger, LogLevel } from "@pnp/logging";
 import { MESSAGE } from "../../config/message";
 import { IRFQGrid, IRFQRequisition } from "../../model/rfq";
 import { IRequisitionGrid } from "../../model/requisition";
+import { AppInsightsService } from "../../config/AppInsightsService";
 
 //#region actions
 export const getAllRFQsAction = createAsyncThunk(
@@ -54,6 +55,10 @@ export const getAllRFQsAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_getAllRFQs) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.retrieveDataFailed,
+        properties: { error: err },
+      });
       return Promise.reject(MESSAGE.retrieveDataFailed);
     }
   }
@@ -174,6 +179,10 @@ export const getRFQAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_getAllRFQs) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.retrieveDataFailed,
+        properties: { error: err },
+      });
       return Promise.reject(MESSAGE.retrieveDataFailed);
     }
   }
@@ -196,6 +205,10 @@ export const updateRFQAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_updateRFQ) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.updateDataFailed,
+        properties: { error: err },
+      });
       return Promise.reject(MESSAGE.updateDataFailed);
     }
   }
@@ -215,7 +228,11 @@ export const createRFQAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_updateRFQ) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
-      return Promise.reject(MESSAGE.retrieveDataFailed);
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.createDataFailed,
+        properties: { error: err },
+      });
+      return Promise.reject(MESSAGE.createDataFailed);
     }
   }
 );

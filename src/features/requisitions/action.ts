@@ -6,6 +6,7 @@ import { getSP } from "../../pnpjsConfig";
 import { Logger, LogLevel } from "@pnp/logging";
 import { MESSAGE } from "../../config/message";
 import { IRequisitionGrid } from "../../model/requisition";
+import { AppInsightsService } from "../../config/AppInsightsService";
 
 //#region actions
 export const getAllRequisitionsAction = createAsyncThunk(
@@ -81,6 +82,10 @@ export const getAllRequisitionsAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_getAllRequisitions) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.retrieveDataFailed,
+        properties: { error: err },
+      });
       return Promise.reject(MESSAGE.retrieveDataFailed);
     }
   }
@@ -123,6 +128,11 @@ export const updateRequisitionAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_updateRequisition) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
+
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.updateDataFailed,
+        properties: { error: err },
+      });
       return Promise.reject(MESSAGE.updateDataFailed);
     }
   }
