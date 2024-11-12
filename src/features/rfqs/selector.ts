@@ -16,3 +16,11 @@ export const allRFQsSelector = createSelector(
   featureStateSelector,
   (state: IRFQState) => state?.AllRFQs
 );
+export const currentRFQSelector = createSelector(
+  featureStateSelector,
+  (state: IRFQState) => state?.currentRFQ
+);
+export const currentRFQRequisitionsSelector = createSelector(
+  featureStateSelector,
+  (state: IRFQState) => state?.currentRFQRequisitions
+);

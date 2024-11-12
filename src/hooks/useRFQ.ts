@@ -8,6 +8,7 @@ import {
   isFetchingSelector,
   messageSelector,
   createRFQAction,
+  getRFQAction,
 } from "../features/rfqs";
 import { IRFQGrid } from "../model/rfq";
 
@@ -16,8 +17,9 @@ type RFQOperators = [
   allRFQs: IRFQGrid[],
   errorMessage: string,
   getAllRFQs: () => void,
-  updateRFQ: (RFQ: IRFQGrid) => void,
-  createRFQ: (RFQ: IRFQGrid) => void
+  getRFQ: (rfq: string) => void,
+  updateRFQ: (rfq: IRFQGrid) => void,
+  createRFQ: (rfq: IRFQGrid) => void
 ];
 
 export const useRFQ = (): Readonly<RFQOperators> => {
@@ -28,15 +30,21 @@ export const useRFQ = (): Readonly<RFQOperators> => {
   const getAllRFQs = useCallback(() => {
     return dispatch(getAllRFQsAction());
   }, [dispatch]);
+  const getRFQ = useCallback(
+    (rfqId: string) => {
+      return dispatch(getRFQAction(rfqId));
+    },
+    [dispatch]
+  );
   const updateRFQ = useCallback(
-    (RFQ: IRFQGrid) => {
-      return dispatch(updateRFQAction(RFQ));
+    (rfq: IRFQGrid) => {
+      return dispatch(updateRFQAction(rfq));
     },
     [dispatch]
   );
   const createRFQ = useCallback(
-    (RFQ: IRFQGrid) => {
-      return dispatch(createRFQAction(RFQ));
+    (rfq: IRFQGrid) => {
+      return dispatch(createRFQAction(rfq));
     },
     [dispatch]
   );
@@ -45,6 +53,7 @@ export const useRFQ = (): Readonly<RFQOperators> => {
     allRFQs,
     errorMessage,
     getAllRFQs,
+    getRFQ,
     updateRFQ,
     createRFQ,
   ] as const;

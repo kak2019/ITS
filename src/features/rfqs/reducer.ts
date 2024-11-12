@@ -1,7 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { FeatureKey } from "../../config/const";
 import { initialState, RFQStatus } from "./rfqsSlice";
-import { createRFQAction, getAllRFQsAction, updateRFQAction } from "./action";
+import {
+  createRFQAction,
+  getAllRFQsAction,
+  getRFQAction,
+  updateRFQAction,
+} from "./action";
 import { IRFQGrid } from "../../model/rfq";
 
 const rfqsSlice = createSlice({
@@ -22,6 +27,18 @@ const rfqsSlice = createSlice({
         state.AllRFQs = [...(action.payload as readonly IRFQGrid[])];
       })
       .addCase(getAllRFQsAction.rejected, (state, action) => {
+        state.status = RFQStatus.Failed;
+        state.message = action.error?.message || "";
+      })
+      .addCase(getRFQAction.pending, (state, action) => {
+        state.status = RFQStatus.Loading;
+      })
+      .addCase(getRFQAction.fulfilled, (state, action) => {
+        state.status = RFQStatus.Idle;
+        state.currentRFQ = action.payload.RFQ;
+        state.currentRFQRequisitions = action.payload.Requisitions;
+      })
+      .addCase(getRFQAction.rejected, (state, action) => {
         state.status = RFQStatus.Failed;
         state.message = action.error?.message || "";
       })
