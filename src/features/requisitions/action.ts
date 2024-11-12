@@ -123,7 +123,7 @@ export const updateRequisitionAction = createAsyncThunk(
         `${CONST.LOG_SOURCE} (_updateRequisition) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
-      return Promise.reject(MESSAGE.retrieveDataFailed);
+      return Promise.reject(MESSAGE.updateDataFailed);
     }
   }
 );
