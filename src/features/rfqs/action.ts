@@ -176,7 +176,7 @@ export const getRFQAction = createAsyncThunk(
       } as IRFQRequisition;
     } catch (err) {
       Logger.write(
-        `${CONST.LOG_SOURCE} (_getAllRFQs) - ${JSON.stringify(err)}`,
+        `${CONST.LOG_SOURCE} (_getRFQ) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
       AppInsightsService.aiInstance.trackEvent({
@@ -225,7 +225,7 @@ export const createRFQAction = createAsyncThunk(
       });
     } catch (err) {
       Logger.write(
-        `${CONST.LOG_SOURCE} (_updateRFQ) - ${JSON.stringify(err)}`,
+        `${CONST.LOG_SOURCE} (_createRFQ) - ${JSON.stringify(err)}`,
         LogLevel.Error
       );
       AppInsightsService.aiInstance.trackEvent({
