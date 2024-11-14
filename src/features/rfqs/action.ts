@@ -64,7 +64,7 @@ export const getAllRFQsAction = createAsyncThunk(
   }
 );
 export const getRFQAction = createAsyncThunk(
-  `${FeatureKey.RFQS}/getAllRFQs`,
+  `${FeatureKey.RFQS}/getRFQ`,
   async (rfqId: string): Promise<IRFQRequisition> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));
