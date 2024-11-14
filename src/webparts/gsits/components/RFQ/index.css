@@ -23,6 +23,13 @@
   font-size: 20px;
   font-weight: 400;
 }
+.button {
+  background: #99CCFF;
+  padding: 5px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 150;
+}
 
 .Requisition .noMargin {
   margin-top: 0;

@@ -1,4 +1,4 @@
-import { DatePicker, DefaultPalette, DetailsList, Dropdown, IColumn, PrimaryButton, Stack, TextField } from '@fluentui/react';
+import { DatePicker, DefaultPalette, DetailsList, Dropdown, IColumn, IconButton, Label, PrimaryButton, Stack, TextField } from '@fluentui/react';
 import * as React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 const RFQ: React.FC = () => {
 
     const { t } = useTranslation();
+    const [isSearchVisibel, setIsSearchVisible ] = useState(true); 
     const [requestType, setRequestType] = useState('');
     const [rfqNumber, setRFQNumber] = useState('');
     const [buyer, setBuyer] = useState('');
@@ -97,39 +98,64 @@ const columns: IColumn[] = [
     
     const fieldStyles = { root: { width: '100%' } };
 
+    const toggleSearchBar = (): void => {
+        setIsSearchVisible(!isSearchVisibel);
+    };
+    
+
       return (
-        <Stack tokens={{ childrenGap: 20 }}>
-        <h2>RFQ & Quote</h2>
+        <Stack tokens={{ childrenGap: 20 }} styles={{root : {width: '100%'}}}>
+        <h2 className='mainTitle'>RFQ & Quote</h2>
         
+         {/* 搜索栏标题 */}
+         <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 10 }}>
+                <IconButton
+                    iconProps={{ iconName: isSearchVisibel ? 'ChevronDown' : 'ChevronRight' }}
+                    title="Toggle Search Bar"
+                    ariaLabel="Toggle Search Bar"
+                    onClick={toggleSearchBar}
+                />
+                <Label styles={{ root: { fontWeight: 'bold', fontSize: 16 } }}>Search</Label>
+                </Stack>
         {/* 搜索区域 */}
+        {isSearchVisibel && 
         <Stack
-            tokens={{ childrenGap: 10 }}
-            styles={{ root: { background: DefaultPalette.themeTertiary, padding: 20 } }}
+        styles={{
+            root: {
+                background: '#CCEEFF',
+                padding: 20,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(5, 1fr)', // 五等分
+                gap: '10px',
+            },
+        }}
         >
             {/* 第一行 */}
-            <Stack horizontal tokens={{ childrenGap: 10 }} wrap>
-            <Stack.Item grow> <Dropdown label="Type" selectedKey={requestType} onChange={(e, option) => setRequestType(String(option?.key || ''))} options={typeOptions} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow> <TextField label="RFQ No." value={rfqNumber} onChange={(e, newValue) => setRFQNumber(newValue || '')} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><TextField label="Buyer" value={buyer} onChange={(e, newValue) => setBuyer(newValue || '')} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><TextField label="Section" value={section} onChange={(e, newValue) => setSection(newValue || '')} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><Dropdown label="Status" selectedKey={status} onChange={(e, option) => setStatus(String(option?.key || ''))} options={statusOptions} styles={fieldStyles}/></Stack.Item>
+           
+            <Dropdown label="Type" selectedKey={requestType} onChange={(e, option) => setRequestType(String(option?.key || ''))} options={typeOptions} styles={fieldStyles}/>
+            <TextField label="RFQ No." value={rfqNumber} onChange={(e, newValue) => setRFQNumber(newValue || '')} styles={fieldStyles}/>
+            <TextField label="Buyer" value={buyer} onChange={(e, newValue) => setBuyer(newValue || '')} styles={fieldStyles}/>
+           <TextField label="Section" value={section} onChange={(e, newValue) => setSection(newValue || '')} styles={fieldStyles}/>
+            <Dropdown label="Status" selectedKey={status} onChange={(e, option) => setStatus(String(option?.key || ''))} options={statusOptions} styles={fieldStyles}/>
                 
-            </Stack>
+            
 
             {/* 第二行 */}
-            <Stack horizontal tokens={{ childrenGap: 10 }} wrap>
-            <Stack.Item grow><TextField label="Parma" value={parma} onChange={(e, newValue) => setParma(newValue || '')} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><DatePicker label="RFQ Release Date From" value={rfqReleaseDateFrom} onSelectDate={date => setRfqReleaseDateFrom(date || undefined)} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><DatePicker label="RFQ Release Date To" value={rfqReleaseDateTo} onSelectDate={date => setRfqReleaseDateTo(date || undefined)} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow> <DatePicker label="RFQ Due Date From" value={rfqDueDateFrom} onSelectDate={date => setRfqDueDateFrom(date || undefined)} styles={fieldStyles}/></Stack.Item>
-            <Stack.Item grow><DatePicker label="RFQ Due Date To" value={rfqDueDateTo} onSelectDate={date => setRfqDueDateTo(date || undefined)} styles={fieldStyles}/></Stack.Item>
-            </Stack>
-        </Stack>
-
+            
+            <TextField label="Parma" value={parma} onChange={(e, newValue) => setParma(newValue || '')} styles={fieldStyles}/>
+            <DatePicker label="RFQ Release Date From" value={rfqReleaseDateFrom} onSelectDate={date => setRfqReleaseDateFrom(date || undefined)} styles={fieldStyles}/>
+            <DatePicker label="RFQ Release Date To" value={rfqReleaseDateTo} onSelectDate={date => setRfqReleaseDateTo(date || undefined)} styles={fieldStyles}/>
+            <DatePicker label="RFQ Due Date From" value={rfqDueDateFrom} onSelectDate={date => setRfqDueDateFrom(date || undefined)} styles={fieldStyles}/>
+            <DatePicker label="RFQ Due Date To" value={rfqDueDateTo} onSelectDate={date => setRfqDueDateTo(date || undefined)} styles={fieldStyles}/>
+            
             {/* 搜索按钮 */}
-            <Stack horizontalAlign="end">
-                <PrimaryButton text="Search" />
-            </Stack>
+            <Stack.Item style={{ gridColumn: '5', justifySelf: 'end' }}>
+                        <PrimaryButton text="Search" className='button'/>
+                    </Stack.Item>
+        </Stack>
+        }
+
+            
 
             {/* 结果展示区域 */}
             <DetailsList
