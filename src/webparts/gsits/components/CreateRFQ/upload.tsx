@@ -19,6 +19,10 @@ const useStyles = mergeStyleSets({
   },
   fileList: {
     marginTop: '10px',
+    position: 'relative',
+    height: '140px',
+    overflow: 'hidden',
+    overflowY: 'auto',
   },
   fileItem: {
     display: 'flex',
@@ -26,7 +30,8 @@ const useStyles = mergeStyleSets({
     borderBottom: '1px solid #e1dfdd',
     padding: '5px 10px',
     alignItems: 'center',
-    height: '30px',
+    height: '35px',
+    boxSizing: 'border-box'
   },
   oddItem: {
     backgroundColor: '#fff',
@@ -37,6 +42,15 @@ const useStyles = mergeStyleSets({
   title: {
     fontWeight: 'bold',
   },
+  placeholder: {
+    height: '120px',
+    position: 'absolute',
+    zIndex: 0,
+    width: '100%'
+  },
+  front: {
+    zIndex: 1
+  }
 });
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
@@ -72,27 +86,31 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
         
         <IconButton iconProps={{ iconName: 'AttachIcon' }} style={{ width: '20px', height: '20px' }} />
         <label htmlFor="file-input" style={{ fontSize: '12px' }}>
-          <span role="img" aria-label="paperclip" style={{ fontWeight: 'bold', fontSize: '16px' }}>
+          <span role="img" aria-label="paperclip" style={{ fontWeight: 'bold', fontSize: '16px' ,marginRight:10}}>
             {uploadTitle ?? 'Click to Upload'}
           </span>
-          <br />
+          {/* <br /> */}
           ({subtitle ?? 'File number limit: 10; Single file size limit: 10MB'})
         </label>
       </div>
-      {/* 仅当 files 数组中有文件时才显示文件列表 */}
-      {files.length > 0 && (
-        <Stack className={classes.fileList}>
-          {files.map((file, index) => (
-            <div key={index} className={`${classes.fileItem} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
-              {file.name}
-              <IconButton
-                iconProps={{ iconName: 'Delete' }}
-                onClick={() => removeFile(index)}
-              />
-            </div>
-          ))}
-        </Stack>
-      )}
+
+      <Stack className={classes.fileList}>
+        <div className={classes.placeholder}>
+          <div className={classes.fileItem + ' ' + classes.oddItem}/>
+          <div className={classes.fileItem + ' ' + classes.evenItem}/>
+          <div className={classes.fileItem + ' ' + classes.oddItem}/>
+          <div className={classes.fileItem + ' ' + classes.evenItem}/>
+        </div>
+        {files.map((file, index) => (
+          <div key={index} className={`${classes.fileItem} ${classes.front} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
+            {file.name}
+            <IconButton
+              iconProps={{ iconName: 'Delete' }}
+              onClick={() => removeFile(index)}
+            />
+          </div>
+        ))}
+      </Stack>
     </div>
   );
 };

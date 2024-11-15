@@ -1,20 +1,21 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Stack, TextField, Dropdown, DetailsList, DetailsListLayoutMode, DatePicker } from '@fluentui/react';
+import { Stack, TextField, Dropdown, DetailsList, DetailsListLayoutMode, DatePicker, SelectionMode } from '@fluentui/react';
 import './index.css';
 import FileUploader from './upload';
 import SupplierSelection from './select';
 import { useTranslation } from 'react-i18next';
-
+import { useLocation } from 'react-router-dom';
 
 
 
 const Requisition: React.FC = () => {
     const { t } = useTranslation(); // 使用 i18next 进行翻译
     const [columnsPerRow, setColumnsPerRow] = useState(5); // 默认每行5列
-
-
-
+    const location = useLocation()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const state:any = location.state
+    console.log(state)
     // 根据屏幕宽度调整列数
     useEffect(() => {
         const handleResize = (): void => {
@@ -31,37 +32,37 @@ const Requisition: React.FC = () => {
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
     const columns = [
-        { key: 'partNo', name: t('Part No.'), fieldName: 'partNo', minWidth: 100 },
-        { key: 'qualifier', name: t('Qualifier'), fieldName: 'qualifier', minWidth: 50 },
-        { key: 'partDescription', name: t('Part Description'), fieldName: 'partDescription', minWidth: 100 },
-        { key: 'materialUser', name: t('Material User'), fieldName: 'materialUser', minWidth: 100 },
-        { key: 'reqType', name: t('Req. Type'), fieldName: 'reqType', minWidth: 50 },
-        { key: 'annualQty', name: t('Annual Qty'), fieldName: 'annualQty', minWidth: 80 },
-        { key: 'orderQty', name: t('Order Qty'), fieldName: 'orderQty', minWidth: 80 },
-        { key: 'reqWeekFrom', name: t('Req Week From'), fieldName: 'reqWeekFrom', minWidth: 100 },
-        { key: 'createdDate', name: t('Created Date'), fieldName: 'createdDate', minWidth: 100 },
-        { key: 'rfqNo', name: t('RFQ No.'), fieldName: 'rfqNo', minWidth: 80 },
-        { key: 'reqBuyer', name: t('Req. Buyer'), fieldName: 'reqBuyer', minWidth: 80 },
-        { key: 'handlerName', name: t('Handler Name'), fieldName: 'handlerName', minWidth: 100 },
-        { key: 'status', name: t('Status'), fieldName: 'status', minWidth: 80 },
+        { key: 'PartNumber', name: t('Part No.'), fieldName: 'PartNumber', minWidth: 100 },
+        { key: 'Qualifier', name: t('Qualifier'), fieldName: 'Qualifier', minWidth: 50 },
+        { key: 'PartDescription', name: t('Part Description'), fieldName: 'PartDescription', minWidth: 100 },
+        { key: 'MaterialUser', name: t('Material User'), fieldName: 'MaterialUser', minWidth: 100 },
+        { key: 'RequisitionType', name: t('Req. Type'), fieldName: 'RequisitionType', minWidth: 100 },
+        { key: 'AnnualQty', name: t('Annual Qty'), fieldName: 'AnnualQty', minWidth: 80 },
+        { key: 'OrderQty', name: t('Order Qty'), fieldName: 'OrderQty', minWidth: 80 },
+        { key: 'RequiredWeek', name: t('Req Week From'), fieldName: 'RequiredWeek', minWidth: 100 },
+        { key: 'CreateDate', name: t('Created Date'), fieldName: 'CreateDate', minWidth: 100 },
+        { key: 'RfqNo', name: t('RFQ No.'), fieldName: 'RfqNo', minWidth: 80 },
+        { key: 'ReqBuyer', name: t('Req. Buyer'), fieldName: 'ReqBuyer', minWidth: 80 },
+        { key: 'HandlerName', name: t('Handler Name'), fieldName: 'HandlerName', minWidth: 100 },
+        { key: 'Status', name: t('Status'), fieldName: 'Status', minWidth: 80 },
     ];
 
-    const items = new Array(10).fill(0).map((_, index) => ({
-        key: index,
-        partNo: '345678901234...',
-        qualifier: '✔',
-        partDescription: 'FLY WHEEL',
-        materialUser: '2920',
-        reqType: 'np',
-        annualQty: '999999',
-        orderQty: '999999',
-        reqWeekFrom: 'yyyymmww',
-        createdDate: 'yyyymmww',
-        rfqNo: '1234567',
-        reqBuyer: 'UDT 0001',
-        handlerName: 'UD Taro',
-        status: 'RFQ Sent',
-    }));
+    // const items = new Array(10).fill(0).map((_, index) => ({
+    //     key: index,
+    //     partNo: '345678901234...',
+    //     qualifier: '✔',
+    //     partDescription: 'FLY WHEEL',
+    //     materialUser: '2920',
+    //     reqType: 'np',
+    //     annualQty: '999999',
+    //     orderQty: '999999',
+    //     reqWeekFrom: 'yyyymmww',
+    //     createdDate: 'yyyymmww',
+    //     rfqNo: '1234567',
+    //     reqBuyer: 'UDT 0001',
+    //     handlerName: 'UD Taro',
+    //     status: 'RFQ Sent',
+    // }));
 
     const dropdownOptions = [
         { key: 'optional', text: 'Optional' },
@@ -106,11 +107,11 @@ const Requisition: React.FC = () => {
            <h3 className="mainTitle noMargin">{t("Selected Parts")}</h3>
             <DetailsList
                 className="detailList"
-                items={items}
+                items={state.selectedItems}
                 columns={columns}
                 setKey="set"
                 layoutMode={DetailsListLayoutMode.fixedColumns}
-                // selectionMode={SelectionMode.single}
+                selectionMode={SelectionMode.none} // 取消单选和多选
                 
                 styles={{ 
                     root: { backgroundColor: '#FFFFFF', border: '1px solid #ddd', borderRadius: '4px' },
@@ -126,8 +127,11 @@ const Requisition: React.FC = () => {
                     width: 0
                 }}
                 onRenderDetailsFooter={() => {
-                    return <div style={{width: '100%', height: '30px', backgroundColor: '#BDBDBD'}}/>
-                }}
+                    const el = document.getElementsByClassName('ms-DetailsHeader')[0]
+                    const width = el && el.clientWidth || '100%'
+                    return (
+                    <div style={{width: width, height: '30px', backgroundColor: '#BDBDBD'}} />
+                )}}
                 selectionPreservedOnEmptyClick={true}
                 ariaLabelForSelectionColumn="Toggle selection"
                 ariaLabelForSelectAllCheckbox="Toggle selection for all items"

@@ -7,8 +7,7 @@ import './index.css';
 import { useTranslation } from 'react-i18next';
 import { useRequisition } from '../../../../hooks/useRequisition';
 import { Spinner, SpinnerSize } from '@fluentui/react';
-
-
+import  {IRequisitionGrid} from '../../../../model/requisition'
 // 定义项目数据类型
 interface Item {
     key: number;
@@ -40,6 +39,7 @@ const Requisition: React.FC = () => {
         getAllRequisitions,
         ,
     ] = useRequisition();
+    
     // 定义 Selection，用于 DetailsList 的选择
     const selection = new Selection({
         onSelectionChanged: () => {
@@ -78,7 +78,7 @@ const Requisition: React.FC = () => {
         { key: 'Qualifier', name: t('Qualifier'), fieldName: 'Qualifier', minWidth: 50 },
         { key: 'PartDescription', name: t('Part Description'), fieldName: 'PartDescription', minWidth: 100 },
         { key: 'MaterialUser', name: t('Material User'), fieldName: 'MaterialUser', minWidth: 100 },
-        { key: 'RequisitionType', name: t('Req. Type'), fieldName: 'RequisitionType', minWidth: 50 },
+        { key: 'RequisitionType', name: t('Req. Type'), fieldName: 'RequisitionType', minWidth: 100 },
         { key: 'AnnualQty', name: t('Annual Qty'), fieldName: 'AnnualQty', minWidth: 80 },
         { key: 'OrderQty', name: t('Order Qty'), fieldName: 'OrderQty', minWidth: 80 },
         { key: 'RequiredWeek', name: t('Req Week From'), fieldName: 'RequiredWeek', minWidth: 100 },
@@ -106,11 +106,92 @@ const Requisition: React.FC = () => {
     //     status: 'RFQ Sent',
     // }));
 
-    const dropdownOptions = [
-        { key: 'optional', text: 'Optional' },
-        { key: 'required', text: 'Required' },
-        { key: 'select', text: 'Please Select' },
+    const RequisitionsType = [
+        { key: 'NP', text: 'NP' },
+        { key: 'RB', text: 'RB' },
+        { key: 'PP', text: 'PP' },
     ];
+    const StatesType = [
+        { key: 'New', text: 'New' },
+        { key: 'In Progress', text: 'In Progress' },
+        { key: 'Sent to GPS', text: 'Sent to GPS' },
+    ];
+    const QualifierType = [
+        { key: '', text: '' },
+    ];
+
+    const [filters, setFilters] = useState<{
+        requisitionType: string;
+        buyer: string;
+        parma: string;
+        section: string;
+        status: string;
+        partNumber: string;
+        qualifier: string;
+        project: string;
+        materialUser: string;
+        rfqNumber: string;
+        requiredWeekFrom: string;
+        requiredWeekTo: string;
+        createdDateFrom: Date | null;
+        createdDateTo: Date | null;
+    }>({
+        requisitionType: '',
+        buyer: '',
+        parma: '',
+        section: '',
+        status: '',
+        partNumber: '',
+        qualifier: '',
+        project: '',
+        materialUser: '',
+        rfqNumber: '',
+        requiredWeekFrom: '',
+        requiredWeekTo: '',
+        createdDateFrom: null,
+        createdDateTo: null,
+    });
+// console.log(filters)
+const applyFilters = (): IRequisitionGrid[] => {
+    return allRequisitions.filter(item => {
+        const {
+            requisitionType,
+            buyer,
+            parma,
+            section,
+            status,
+            partNumber,
+            qualifier,
+            project,
+            materialUser,
+            rfqNumber,
+            requiredWeekFrom,
+            requiredWeekTo,
+            createdDateFrom,
+            createdDateTo,
+        } = filters;
+
+        return (
+            (!requisitionType || item.RequisitionType === requisitionType) &&
+            (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase())) &&
+            (!parma || item.Parma.toLowerCase().includes(parma.toLowerCase())) &&
+            (!section || item.Section.toLowerCase().includes(section.toLowerCase())) &&
+            (!status || item.Status === status) &&
+            (!partNumber || item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
+            (!qualifier || item.Qualifier === qualifier) &&
+            (!project || item.Project.toLowerCase().includes(project.toLowerCase())) &&
+            (!materialUser || item.MaterialUser === materialUser) &&
+            (!rfqNumber || item.RfqNo.toLowerCase().includes(rfqNumber.toLowerCase())) &&
+            (!requiredWeekFrom || item.RequiredWeek >= requiredWeekFrom) &&
+            (!requiredWeekTo || item.RequiredWeek <= requiredWeekTo) &&
+            (!createdDateFrom || (item.CreateDate && new Date(item.CreateDate) >= createdDateFrom)) &&
+            (!createdDateTo || (item.CreateDate && new Date(item.CreateDate) <= createdDateTo))
+        );
+    });
+};
+const [filteredItems, setFilteredItems] = useState<IRequisitionGrid[]>(allRequisitions);
+
+
     useEffect(() => {
         getAllRequisitions();
     }, [getAllRequisitions]);
@@ -146,51 +227,93 @@ const Requisition: React.FC = () => {
                     <Stack tokens={{ childrenGap: 10, padding: 20 }} styles={{ root: { backgroundColor: '#CCEEFF', borderRadius: '4px' } }}>
                         <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start">
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label="Requisition Type" placeholder="Please Select" options={dropdownOptions} style={{width: Number(itemWidth) - 30}} />
+                                <Dropdown label="Requisition Type" placeholder="Please Select" options={RequisitionsType} style={{width: Number(itemWidth) - 30}} 
+                                onChange={(e, option) => setFilters(prev => ({ ...prev, requisitionType: String(option?.key || '') }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Buyer" placeholder="Entered text" style={{width: Number(itemWidth) - 30}} />
+                                <TextField label="Buyer" placeholder="Entered text" style={{width: Number(itemWidth) - 30}} 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, buyer: newValue || '' }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Parma" placeholder="Placeholder text" style={{width: Number(itemWidth) - 30}} />
+                                <TextField label="Parma" placeholder="Placeholder text" style={{width: Number(itemWidth) - 30}} 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, parma: newValue || '' }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Section" placeholder="Placeholder text" style={{width: Number(itemWidth) - 30}} />
+                                <TextField label="Section" placeholder="Placeholder text" style={{width: Number(itemWidth) - 30}} 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, section: newValue || '' }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label="Status" placeholder="Optional" options={dropdownOptions} style={{width: Number(itemWidth) - 30}} />
-                            </Stack.Item>
-
-                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Part Number" placeholder="Placeholder text" />
-                            </Stack.Item>
-                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label="Qualifier" placeholder="Optional" options={dropdownOptions} />
-                            </Stack.Item>
-                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Project" placeholder="Placeholder text" />
-                            </Stack.Item>
-                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label="Material User" placeholder="Optional" options={dropdownOptions} />
-                            </Stack.Item>
-                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label="RFQ Number" placeholder="Optional" options={dropdownOptions} />
+                                <Dropdown label="Status" placeholder="Optional" options={StatesType} style={{width: Number(itemWidth) - 30}} 
+                                onChange={(e, option) => setFilters(prev => ({ ...prev, status: String(option?.key || '') }))}
+                                />
                             </Stack.Item>
 
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Required Week From" placeholder="YYYYWW" />
+                                <TextField label="Part Number" placeholder="Placeholder text" 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, partNumber: newValue || '' }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label="Required Week To" placeholder="YYYYWW" />
+                                <Dropdown label="Qualifier" placeholder="Optional" options={QualifierType} 
+                                onChange={(e, option) => setFilters(prev => ({ ...prev, qualifier: String(option?.key || '') }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <DatePicker label="Created Date From" placeholder="Select Date" ariaLabel="Select a date" />
+                                <TextField label="Project" placeholder="Placeholder text" 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, project: newValue || '' }))}
+                                />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <DatePicker label="Created Date To" placeholder="Select Date" ariaLabel="Select a date" />
+                                <TextField label="Material User"  
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, materialUser: newValue || '' }))}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                                <TextField label="RFQ Number"  
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, rfqNumber: newValue || '' }))}/>
+                            </Stack.Item>
+
+                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                                <TextField label="Required Week From" placeholder="YYYYWW" 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, requiredWeekFrom: newValue || '' }))}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                                <TextField label="Required Week To" placeholder="YYYYWW" 
+                                onChange={(e, newValue) => setFilters(prev => ({ ...prev, requiredWeekTo: newValue || '' }))}
+                                />
+                            </Stack.Item>
+                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                                <DatePicker label="Created Date From" placeholder="Select Date" ariaLabel="Select a date" 
+                                onSelectDate={(date) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        createdDateFrom: date || null, // 确保 date 为 null，而不是 undefined
+                                    }))
+                                }
+                                 
+                                 />
+
+                            </Stack.Item>
+                            <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
+                                <DatePicker label="Created Date To" placeholder="Select Date" ariaLabel="Select a date" 
+                                 onSelectDate={(date) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        createdDateTo: date || null, // 确保 date 为 null，而不是 undefined
+                                    }))
+                                }/>
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth, textAlign: 'right' } }}>
-                                <PrimaryButton text="Search" styles={{ root: { marginTop: 28, border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black', borderRadius: '4px', width: 150 } }} />
+                                <PrimaryButton text="Search" styles={{ root: { marginTop: 28, border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black', borderRadius: '4px', width: 150 } }} 
+                                  onClick={() => {
+                                    const result = applyFilters();
+                                    setFilteredItems(result);
+                                }}/>
                             </Stack.Item>
                         </Stack>
                     </Stack>
@@ -204,7 +327,7 @@ const Requisition: React.FC = () => {
         ) : (
             <DetailsList
                 className="detailList"
-                items={allRequisitions}
+                items={filteredItems}//filteredItems allRequisitions
                 columns={columns}
                 setKey="set"
                 selection={selection}
@@ -222,9 +345,12 @@ const Requisition: React.FC = () => {
                     height: 0,
                     width: 0
                 }}
-                onRenderDetailsFooter={() => (
-                    <div style={{width: '100%', height: '30px', backgroundColor: '#BDBDBD'}} />
-                )}
+                onRenderDetailsFooter={() => {
+                    const el = document.getElementsByClassName('ms-DetailsHeader')[0]
+                    const width = el && el.clientWidth || '100%'
+                    return (
+                    <div style={{width: width, height: '30px', backgroundColor: '#BDBDBD'}} />
+                )}}
                 selectionPreservedOnEmptyClick={true}
                 ariaLabelForSelectionColumn="Toggle selection"
                 ariaLabelForSelectAllCheckbox="Toggle selection for all items"
