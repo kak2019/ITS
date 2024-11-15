@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-expect-error
 import { ApplicationInsights, ITelemetryItem, Snippet, SeverityLevel } from '@microsoft/applicationinsights-web';
 import jsSHA from 'jssha';
 
