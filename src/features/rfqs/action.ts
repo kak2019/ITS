@@ -22,7 +22,23 @@ export const getAllRFQsAction = createAsyncThunk(
       while (hasNext) {
         const response = await spCache.web.lists
           .getByTitle(CONST.LIST_NAME_RFQ)
-          .items.select("ID", "Title")
+          .items.select(
+            "ID",
+            "Title",
+            "Parma",
+            "RFQDueDate",
+            "OrderType",
+            "RFQInstructionToSupplier",
+            "SupplierContact",
+            "RFQStatus",
+            "BuyerInfo",
+            "SectionInfo",
+            "Comment",
+            "CommentHistory",
+            "RequisitionIds",
+            "QuoteReceivedDate",
+            "Created"
+          )
           .top(5000)
           .skip(pageIndex * 5000)();
         items = items.concat(
@@ -136,7 +152,23 @@ export const getRFQAction = createAsyncThunk(
       while (hasNextRFQ) {
         const response = await spCache.web.lists
           .getByTitle(CONST.LIST_NAME_RFQ)
-          .items.select("ID", "Title")
+          .items.select(
+            "ID",
+            "Title",
+            "Parma",
+            "RFQDueDate",
+            "OrderType",
+            "RFQInstructionToSupplier",
+            "SupplierContact",
+            "RFQStatus",
+            "BuyerInfo",
+            "SectionInfo",
+            "Comment",
+            "CommentHistory",
+            "RequisitionIds",
+            "QuoteReceivedDate",
+            "Created"
+          )
           .top(5000)
           .skip(pageIndexRFQ * 5000)();
         rfqItems = rfqItems.concat(
@@ -244,4 +276,24 @@ function stringToDate(dateString: string): Date {
   const day = Number(dateString.substring(4, 6));
   return new Date(year, month, day);
 }
+// function pad(value: number): string {
+//   return value < 10 ? "0" + value : String(value);
+// }
+// function processDate(dateToBeProcess: string): string {
+//   if (!dateToBeProcess) {
+//     return "";
+//   } else {
+//     const dateTime = new Date(dateToBeProcess);
+//     const userTimeZoneOffset = dateTime.getTimezoneOffset() * 60000;
+//     const dateLocalTime = new Date(dateTime.getTime() - userTimeZoneOffset);
+//     const dateDecoded = [];
+//     const year = String(dateLocalTime.getUTCFullYear());
+//     const month = pad(dateLocalTime.getUTCMonth() + 1);
+//     const day = pad(dateLocalTime.getUTCDate());
+//     dateDecoded[0] = day;
+//     dateDecoded[1] = month;
+//     dateDecoded[2] = year;
+//     return dateDecoded.join("-");
+//   }
+// }
 //#endregion

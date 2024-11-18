@@ -8,20 +8,21 @@ export class HostSettings {
   public static get AadClientId(): string {
     return aadClientId;
   }
-  public static get AppInsightsKey():string {
+  public static get AppInsightsKey(): string {
     return appInsightsKey;
   }
 }
 const CONST = {
   LIST_NAME_REQUISITION: "Requisition",
   LIST_NAME_RFQ: "RFQs",
+  LIST_NAME_USERMAPPING: "UserSupplierMapping",
   CONFIGLIB_Name: "SiteAssets",
   SPLITTER: "; ",
   LOG_SOURCE: "🔶gsits",
   LIBRARY_NAME: "Documents",
   azureFunctionBaseUrl: HostSettings.AzureHost,
   aadClientId: HostSettings.AadClientId,
-  appInsightsKey:HostSettings.AppInsightsKey,
+  appInsightsKey: HostSettings.AppInsightsKey,
 };
 /**
  * State feature key (prefix of action name)
@@ -33,5 +34,6 @@ const FeatureKey = {
   QUOTATIONS: "QUOTATIONS",
   DOCUMENTS: "DOCUMENTS",
   REQUISITIONS: "REQUISITIONS",
+  USERS: "USERS",
 } as const;
 export { CONST, FeatureKey };
