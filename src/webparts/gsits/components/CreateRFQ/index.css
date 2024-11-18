@@ -32,6 +32,18 @@
 .RFQ .ms-Viewport {
   margin-top: 0;
 }
+.RFQ .ms-DetailsHeader-cellTitle {
+  height: 100%;
+}
+.RFQ .ms-DetailsHeader-cellName {
+  text-overflow: unset;
+  overflow: unset;
+  width: 100%;
+  white-space: wrap;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+}
 
 /* .Requisition .detailList .ms-DetailsHeader {
   background-color: #99CCFF;
