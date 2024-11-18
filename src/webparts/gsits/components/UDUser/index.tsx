@@ -4,8 +4,7 @@ import {
   DetailsListLayoutMode,
   SelectionMode,
 } from "@fluentui/react";
-import { useRequisition } from "../../../../hooks/useRequisition";
-import { IRequisitionGrid } from "../../../../model/requisition";
+import { useRFQ } from "../../../../hooks/useRFQ";
 
 const UDUser: React.FC = () => {
   //#region demo data
@@ -35,8 +34,7 @@ const UDUser: React.FC = () => {
   ];
   //#endregion
   //#region properties
-  const [, allRequisitions, , getAllRequisitions, updateRequisition] =
-    useRequisition();
+  const [, allRFQs, , getAllRFQs, , , ,] = useRFQ();
   const columns = [
     {
       key: "supplierid",
@@ -114,17 +112,11 @@ const UDUser: React.FC = () => {
   //#endregion
   //#region events
   React.useEffect(() => {
-    getAllRequisitions();
+    getAllRFQs();
   }, []);
-  React.useEffect(() => {
-    console.log(allRequisitions);
-  }, allRequisitions);
   const Test = (): void => {
-    const testdata: IRequisitionGrid = JSON.parse(
-      JSON.stringify(allRequisitions[0])
-    );
-    testdata.HandlerName = "Test";
-    updateRequisition(testdata);
+    console.log("test");
+    console.log(allRFQs);
   };
   //#endregion
   //#region html

@@ -20,7 +20,7 @@ const DemoForm: React.FC = () => {
         const fetchData = async (): Promise<void> => {
             try {
                 const client = getAADClient();
-                const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/FinancialCompaniesFunction`, AadHttpClient.configurations.v1);
+                const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetParma?q=981`, AadHttpClient.configurations.v1);
                 const result = await response.json();
                 console.log(result);
 

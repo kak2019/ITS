@@ -21,8 +21,8 @@ build.configureWebpack.mergeConfig({
     else {
       // specify dev settings here
       defineOptions = {
-        'azureFunctionBaseUrl': JSON.stringify('https://func-ud-hanyu-dev.azurewebsites.net'),
-        'aadClientId': JSON.stringify('265e00af-ca5d-4248-9a2c-10da0f408f78'),
+        'azureFunctionBaseUrl': JSON.stringify('https://func-ud-gsits-dev.azurewebsites.net'),
+        'aadClientId': JSON.stringify('4ec72fbb-bdc9-493e-b125-57277bde95a6'),
         'appInsightsKey': JSON.stringify('f5a5f8dc-a849-4e1a-af8b-5cce4da248e4')
       }
     }

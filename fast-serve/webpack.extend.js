@@ -21,8 +21,8 @@ if (azureFunctionBaseUrl && aadClientId) {
 } else {
   // specify dev settings here
   defineOptions = {
-    'azureFunctionBaseUrl': JSON.stringify('https://func-api-financialsrvc-ud-dev.azurewebsites.net'),
-    'aadClientId': JSON.stringify('f8b4e9e3-26f6-4307-888b-b77569acb0a5'),
+    'azureFunctionBaseUrl': JSON.stringify('https://func-ud-gsits-dev.azurewebsites.net'),
+    'aadClientId': JSON.stringify('4ec72fbb-bdc9-493e-b125-57277bde95a6'),
     'appInsightsKey': JSON.stringify('f5a5f8dc-a849-4e1a-af8b-5cce4da248e4')
   }
 }
