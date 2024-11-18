@@ -10,7 +10,8 @@ import { Spinner, SpinnerSize } from '@fluentui/react';
 import  {IRequisitionGrid} from '../../../../model/requisition'
 import { useUser } from '../../../../hooks/useUser';
 import { Logger, LogLevel } from '@pnp/logging';
-import AppContext from '../../../../../src/AppContext';
+import AppContext from '../../../../AppContext';
+
 
 // 定义项目数据类型
 interface Item {
