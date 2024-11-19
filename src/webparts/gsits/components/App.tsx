@@ -44,7 +44,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <Route path='/requisition' element={<Requisition />} />
                   <Route path='/rfq' element={<RFQ />} />
                   <Route path='*' element={<PageNotFound />} />
-                  <Route path='/' element={<Navigate to="/requisition" />} />
+                  <Route path='/' element={<Navigate to="/rfq" />} />
                   <Route path='/role' element={<UDUser />} />
                   <Route path="/create-rfq" element={<CreateRFQ />} />
                   <Route path="/demo" element={<DemoForm/>} />
