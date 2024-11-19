@@ -14,6 +14,7 @@ import PageNotFound from './PageNotFound';
 import UDUser from './UDUser';
 import LanguageToggle from './common/LanguageToggle';
 import CreateRFQ from './CreateRFQ'
+import DemoForm from './UIDemo/DemoForm';
 
 export default class Gsits extends React.Component<IGsitsProps> {
   public render(): React.ReactElement<IGsitsProps> {
@@ -29,11 +30,10 @@ export default class Gsits extends React.Component<IGsitsProps> {
             <section className={`${styles.gsits} ${hasTeamsContext ? styles.teams : ''}`}>
               <nav>
                 <ul>
-                  <li><NavLink to="/requisition" className={({ isActive }) => isActive ? styles.active : ''}>Requisition</NavLink></li>
-                  <li><NavLink to="/rfq" className={({ isActive }) => isActive ? styles.active : ''}>RFQ</NavLink></li>
-                  <li><NavLink to="/quotation" className={({ isActive }) => isActive ? styles.active : ''}>Part Quotation</NavLink></li>
-                  <li><NavLink to="/changeprice" className={({ isActive }) => isActive ? styles.active : ''}>Change Price</NavLink></li>
-                  <li><NavLink to="/role" className={({ isActive }) => isActive ? styles.active : ''}>UD User</NavLink></li>
+                  <li><NavLink to="/requisition" className={({ isActive }) => isActive ? styles.active : ''}>New Part Requisition</NavLink></li>
+                  <li><NavLink to="/pricechange" className={({ isActive }) => isActive ? styles.active : ''}>Price Change Request</NavLink></li>
+                  <li><NavLink to="/rfq" className={({ isActive }) => isActive ? styles.active : ''}>RFQ & QUOTE</NavLink></li>
+                  
                 </ul>
                 <div className={styles.toggleContainer}>
                   <LanguageToggle/>
@@ -47,6 +47,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <Route path='/' element={<Navigate to="/requisition" />} />
                   <Route path='/role' element={<UDUser />} />
                   <Route path="/create-rfq" element={<CreateRFQ />} />
+                  <Route path="/demo" element={<DemoForm/>} />
                 </Routes>
               </React.Suspense>
             </section>
