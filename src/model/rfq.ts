@@ -4,10 +4,10 @@ export interface IRFQGrid {
   ID?: string;
   Title?: string;
   Parma?: string;
-  RFQDueDate?: string;
+  SupplierContact?: string;
+  RFQDueDate?: Date;
   OrderType?: string;
   RFQInstructionToSupplier?: string;
-  SupplierContact?: string;
   RFQStatus?: string;
   BuyerInfo?: string;
   SectionInfo?: string;
@@ -15,6 +15,10 @@ export interface IRFQGrid {
   CommentHistory?: string;
   RequisitionIds?: string;
   QuoteReceivedDate?: Date;
+  ReasonOfRFQ?: string;
+  EffectiveDateRequest?: Date;
+  HandlerName?: string;
+  RFQNo?: string;
   Created?: Date;
 }
 export interface IRFQRequisition {

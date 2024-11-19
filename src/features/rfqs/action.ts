@@ -26,10 +26,10 @@ export const getAllRFQsAction = createAsyncThunk(
             "ID",
             "Title",
             "Parma",
+            "SupplierContact",
             "RFQDueDate",
             "OrderType",
             "RFQInstructionToSupplier",
-            "SupplierContact",
             "RFQStatus",
             "BuyerInfo",
             "SectionInfo",
@@ -37,6 +37,10 @@ export const getAllRFQsAction = createAsyncThunk(
             "CommentHistory",
             "RequisitionIds",
             "QuoteReceivedDate",
+            "ReasonofRFQ",
+            "EffectiveDateRequest",
+            "HandlerName",
+            "RFQNo_x002e_",
             "Created"
           )
           .top(5000)
@@ -47,10 +51,10 @@ export const getAllRFQsAction = createAsyncThunk(
               ID: item.ID,
               Title: item.Title,
               Parma: item.Parma,
+              SupplierContact: item.SupplierContact,
               RFQDueDate: item.RFQDueDate,
               OrderType: item.OrderType,
               RFQInstructionToSupplier: item.RFQInstructionToSupplier,
-              SupplierContact: item.SupplierContact,
               RFQStatus: item.RFQStatus,
               BuyerInfo: item.BuyerInfo,
               SectionInfo: item.SectionInfo,
@@ -58,6 +62,10 @@ export const getAllRFQsAction = createAsyncThunk(
               CommentHistory: item.CommentHistory,
               RequisitionIds: item.RequisitionIds,
               QuoteReceivedDate: item.QuoteReceivedDate,
+              ReasonOfRFQ: item.ReasonofRFQ,
+              EffectiveDateRequest: item.EffectiveDateRequest,
+              HandlerName: item.HandlerName,
+              RFQNo: item.RFQNo_x002e_,
               Created: item.Created,
             } as IRFQGrid;
           })
