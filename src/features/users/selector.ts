@@ -16,3 +16,7 @@ export const supplierIdSelector = createSelector(
   featureStateSelector,
   (state: IUserState) => state?.SupplierId
 );
+export const allUserRolesSelector = createSelector(
+  featureStateSelector,
+  (state: IUserState) => state?.AllUserRoles
+);

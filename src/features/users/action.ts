@@ -6,7 +6,7 @@ import { getSP } from "../../pnpjsConfig";
 import { Logger, LogLevel } from "@pnp/logging";
 import { MESSAGE } from "../../config/message";
 import { AppInsightsService } from "../../config/AppInsightsService";
-import { IUserMapping } from "../../model/userMapping";
+import { IUserMapping, IUserRole } from "../../model/user";
 
 //#region actions
 export const getSupplierIdByUserEmailAction = createAsyncThunk(
@@ -36,6 +36,52 @@ export const getSupplierIdByUserEmailAction = createAsyncThunk(
         pageIndex += 1;
       }
       return items.filter((item) => item.UserEmail === email)[0].SupplierId;
+    } catch (err) {
+      Logger.write(
+        `${CONST.LOG_SOURCE} (_getSupplierId) - ${JSON.stringify(err)}`,
+        LogLevel.Error
+      );
+      AppInsightsService.aiInstance.trackEvent({
+        name: MESSAGE.retrieveDataFailed,
+        properties: { error: err },
+      });
+      return Promise.reject(MESSAGE.retrieveDataFailed);
+    }
+  }
+);
+export const getUserRoleAction = createAsyncThunk(
+  `${FeatureKey.USERS}/getUserRole`,
+  async (): Promise<IUserRole[]> => {
+    const sp = spfi(getSP());
+    const spCache = sp.using(Caching({ store: "session" }));
+    try {
+      let items: IUserRole[] = [];
+      let hasNext = true;
+      let pageIndex = 0;
+      while (hasNext) {
+        const response = await spCache.web.lists
+          .getByTitle(CONST.LIST_NAME_USERROLE)
+          .items.top(5000)
+          .skip(pageIndex * 5000)();
+        items = items.concat(
+          response.map((item) => {
+            return {
+              RolePermission: item.Role_x002f_Permission,
+              RequisitionUpload: item.RequisitionUpload,
+              RequisitionforNewPartPriceInput: item.RequisitionforNewPartPrice,
+              NewPartsRFQCreation: item.NewPartsRFQCreation,
+              RFQQUOT: item.RFQQUOT,
+              QuotationList: item.QuotationList,
+              PartPriceBreakdown: item.PartPriceBreakdown,
+              OrderFiles: item.OrderFiles,
+              MasterData: item.MasterData,
+            } as IUserRole;
+          })
+        );
+        hasNext = response.length === 5000;
+        pageIndex += 1;
+      }
+      return items;
     } catch (err) {
       Logger.write(
         `${CONST.LOG_SOURCE} (_getSupplierId) - ${JSON.stringify(err)}`,
