@@ -164,10 +164,10 @@ export const getRFQAction = createAsyncThunk(
             "ID",
             "Title",
             "Parma",
+            "SupplierContact",
             "RFQDueDate",
             "OrderType",
             "RFQInstructionToSupplier",
-            "SupplierContact",
             "RFQStatus",
             "BuyerInfo",
             "SectionInfo",
@@ -175,6 +175,10 @@ export const getRFQAction = createAsyncThunk(
             "CommentHistory",
             "RequisitionIds",
             "QuoteReceivedDate",
+            "ReasonofRFQ",
+            "EffectiveDateRequest",
+            "HandlerName",
+            "RFQNo_x002e_",
             "Created"
           )
           .top(5000)
@@ -185,10 +189,10 @@ export const getRFQAction = createAsyncThunk(
               ID: item.ID,
               Title: item.Title,
               Parma: item.Parma,
+              SupplierContact: item.SupplierContact,
               RFQDueDate: item.RFQDueDate,
               OrderType: item.OrderType,
               RFQInstructionToSupplier: item.RFQInstructionToSupplier,
-              SupplierContact: item.SupplierContact,
               RFQStatus: item.RFQStatus,
               BuyerInfo: item.BuyerInfo,
               SectionInfo: item.SectionInfo,
@@ -196,6 +200,10 @@ export const getRFQAction = createAsyncThunk(
               CommentHistory: item.CommentHistory,
               RequisitionIds: item.RequisitionIds,
               QuoteReceivedDate: item.QuoteReceivedDate,
+              ReasonOfRFQ: item.ReasonofRFQ,
+              EffectiveDateRequest: item.EffectiveDateRequest,
+              HandlerName: item.HandlerName,
+              RFQNo: item.RFQNo_x002e_,
               Created: item.Created,
             } as IRFQGrid;
           })
@@ -239,6 +247,22 @@ export const updateRFQAction = createAsyncThunk(
         .update({
           ID: rfq.ID,
           Title: rfq.Title,
+          Parma: rfq.Parma,
+          SupplierContact: rfq.SupplierContact,
+          RFQDueDate: rfq.RFQDueDate,
+          OrderType: rfq.OrderType,
+          RFQInstructionToSupplier: rfq.RFQInstructionToSupplier,
+          RFQStatus: rfq.RFQStatus,
+          BuyerInfo: rfq.BuyerInfo,
+          SectionInfo: rfq.SectionInfo,
+          Comment: rfq.Comment,
+          CommentHistory: rfq.CommentHistory,
+          RequisitionIds: rfq.RequisitionIds,
+          QuoteReceivedDate: rfq.QuoteReceivedDate,
+          ReasonofRFQ: rfq.ReasonOfRFQ,
+          EffectiveDateRequest: rfq.EffectiveDateRequest,
+          HandlerName: rfq.HandlerName,
+          RFQNo_x002e_: rfq.RFQNo,
         });
     } catch (err) {
       Logger.write(
@@ -262,6 +286,22 @@ export const createRFQAction = createAsyncThunk(
       await spCache.web.lists.getByTitle(CONST.LIST_NAME_RFQ).items.add({
         ID: rfq.ID,
         Title: rfq.Title,
+        Parma: rfq.Parma,
+        SupplierContact: rfq.SupplierContact,
+        RFQDueDate: rfq.RFQDueDate,
+        OrderType: rfq.OrderType,
+        RFQInstructionToSupplier: rfq.RFQInstructionToSupplier,
+        RFQStatus: rfq.RFQStatus,
+        BuyerInfo: rfq.BuyerInfo,
+        SectionInfo: rfq.SectionInfo,
+        Comment: rfq.Comment,
+        CommentHistory: rfq.CommentHistory,
+        RequisitionIds: rfq.RequisitionIds,
+        QuoteReceivedDate: rfq.QuoteReceivedDate,
+        ReasonofRFQ: rfq.ReasonOfRFQ,
+        EffectiveDateRequest: rfq.EffectiveDateRequest,
+        HandlerName: rfq.HandlerName,
+        RFQNo_x002e_: rfq.RFQNo,
       });
     } catch (err) {
       Logger.write(
