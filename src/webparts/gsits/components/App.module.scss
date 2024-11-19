@@ -23,11 +23,13 @@ nav {
 
 .toggleContainer {
   width: 7em;
-  padding-bottom: 1.5em;
+  padding-top: 0.4em;
 }
 
 .active {
-  border-bottom: 2px solid red;
+  background-color: #515151;
+  color: #d6d7d6;
+  //border-bottom: 2px solid red;
 }
 
 :global {

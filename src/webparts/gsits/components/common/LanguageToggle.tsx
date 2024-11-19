@@ -15,7 +15,7 @@ const LanguageToggle: React.FC = () => {
 
     return (
         <Toggle
-            label="Language"
+            label=""
             onText="日本語"
             offText="English"
             onChange={handleToggleChange}
