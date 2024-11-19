@@ -11,9 +11,9 @@ import { IRequisitionGrid } from '../../../../model/requisition'
 import { useUser } from '../../../../hooks/useUser';
 import { Logger, LogLevel } from '@pnp/logging';
 import AppContext from '../../../../AppContext';
-import { getAADClient } from '../../../../pnpjsConfig';
-import { AadHttpClient } from '@microsoft/sp-http';
-import { CONST } from '../../../../config/const';
+// import { getAADClient } from '../../../../pnpjsConfig';
+// import { AadHttpClient } from '@microsoft/sp-http';
+// import { CONST } from '../../../../config/const';
 // 定义项目数据类型
 interface Item {
     key: number;
@@ -72,24 +72,24 @@ const Requisition: React.FC = () => {
     const toggleSearchVisibility = (): void => {
         setIsSearchVisible(!isSearchVisible);
     };
-    useEffect((): void => {
-        // Dome function app
-        const fetchData = async (): Promise<void> => {
-            try {
-                const client = getAADClient();
-                const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetParma?q=981`, AadHttpClient.configurations.v1);
-                const result = await response.json();
-                console.log(result);
+    // useEffect((): void => {
+    //     // Dome function app
+    //     const fetchData = async (): Promise<void> => {
+    //         try {
+    //             const client = getAADClient();
+    //             const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetParma?q=981`, AadHttpClient.configurations.v1);
+    //             const result = await response.json();
+    //             console.log(result);
 
-            }
-            catch (error) {
-                console.error(error);
+    //         }
+    //         catch (error) {
+    //             console.error(error);
 
-            }
-        };
-        fetchData().then(_ => _, _ => _);
+    //         }
+    //     };
+    //     fetchData().then(_ => _, _ => _);
 
-    }, []);
+    // }, []);
 
     // 根据屏幕宽度调整列数
     useEffect(() => {
