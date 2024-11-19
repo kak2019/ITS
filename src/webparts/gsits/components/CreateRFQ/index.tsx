@@ -29,10 +29,10 @@ const Requisition: React.FC = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
- // 跳转到 Create RFQ 页面，并传递选中的记录
- const handleBack = ():void => {
-    navigate('/requisition');
-};
+    // 跳转到 Create RFQ 页面，并传递选中的记录
+    const handleBack = ():void => {
+        navigate('/requisition');
+    };
 
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
@@ -75,6 +75,10 @@ const Requisition: React.FC = () => {
         { key: 'select', text: 'Please Select' },
     ];
 
+    const [form, setForm] = React.useState({
+        parma: ''
+    })
+
     return (
         <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
             <h2 className='mainTitle'>{t("New Parts RFQ Creation")}</h2>
@@ -82,7 +86,10 @@ const Requisition: React.FC = () => {
                 <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start" styles={{ root: { width: '50%' } }}>
                     {/* 控制每个 Stack.Item 的宽度 */}
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
-                        <TextField label="Parma" placeholder="Entered text" style={{ width: '100%' }} />
+                        <TextField value={form.parma} label="Parma" placeholder="Entered text" onChange={(val) => setForm({
+                            ...form,
+                            parma: val.currentTarget.value
+                        })} style={{ width: '100%' }} />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%', alignSelf: 'flex-end' } }}>
                         Nelson(Changzhou) Tubing Co,Ltd
@@ -91,7 +98,7 @@ const Requisition: React.FC = () => {
                         <DatePicker label="RFQ Due Date" placeholder="yymmww" />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
-                        <Dropdown label="Order Type" placeholder="Please Select" multiSelect options={dropdownOptions} style={{ width: Number(itemWidth) - 30 }} />
+                        <Dropdown label="Order Type" placeholder="Please Select" multiSelect options={form.parma ? [{key: form.parma, text: form.parma}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
                     </Stack.Item>
                     <Stack styles={{ root: { width: '100%' } }}>
                         <FileUploader title="Add RFQ Attachments" initalNum={4} />
@@ -150,12 +157,12 @@ const Requisition: React.FC = () => {
                 <PrimaryButton
                     text={t('Back')}
                     styles={{ root: { border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black' } }}
-                onClick={handleBack}
+                    onClick={handleBack}
                 />
                 <PrimaryButton
                     text={t('Submit')}
                     styles={{ root: { border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black' } }}
-                // onClick={handleCreateRFQ}
+                    // onClick={handleCreateRFQ}
                 />
             </Stack>
         </Stack>
