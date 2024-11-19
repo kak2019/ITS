@@ -14,6 +14,13 @@ import {
   mergeStyleSets,
   TextField
 } from '@fluentui/react';
+import { getAADClient } from '../../../../pnpjsConfig';
+import { AadHttpClient } from '@microsoft/sp-http';
+import { CONST } from '../../../../config/const';
+import { useContext, useEffect, useState } from "react";
+import { Logger, LogLevel } from "@pnp/logging";
+import { useUser } from "../../../../hooks";
+import AppContext from "../../../../AppContext";
 
 const classes = mergeStyleSets({
   areaBox: {
@@ -56,34 +63,62 @@ const classes = mergeStyleSets({
   }
 });
 
-const supplierData = [
-  { name: 'Feng Chen', email: 'feng.chen@nelsongp.com', role: 'import & export', department: 'Logistics' },
-  { name: 'Martin Ma', email: 'martin.ma@nelsongp.com', role: 'engineering manager', department: 'Quality' },
-  { name: 'Frank Liu', email: 'frank.liu@nelsongp.com', role: 'assistant quality manager', department: 'Quality' },
-  { name: 'John Doe', email: 'john.doe@nelsongp.com', role: 'quality analyst', department: 'Quality' },
-  { name: 'Jane Smith', email: 'jane.smith@nelsongp.com', role: 'procurement specialist', department: 'Procurement' },
-  { name: 'Martin Ma33', email: 'martin.ma@nelsongp.com22', role: 'engineering manager', department: 'Quality' },
-];
-
 const SupplierSelection: React.FC = () => {
-  const [contacts, setContacts] = React.useState<(null | { name: string; email: string })[]>(Array(5).fill(null));
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedSuppliers, setSelectedSuppliers] = React.useState<Set<string>>(new Set());
-  const [unSelectedSuppliers, setUn] = React.useState<any[]>([...supplierData]);
-  const [modalOpen, setOpen] = React.useState<boolean>(false)
-  const [createState, setState] = React.useState<any>({})
-
-
-  const [hideDialog, setHideDialog] = React.useState(true);
-  const [dialogProps, setTip] = React.useState({
+  const [contacts, setContacts] = useState<(null | { name: string; email: string })[]>(Array(5).fill(null));
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedSuppliers, setSelectedSuppliers] = useState<Set<string>>(new Set());
+  const [unSelectedSuppliers, setUn] = useState<any[]>([]);
+  const [modalOpen, setOpen] = useState<boolean>(false);
+  const [createState, setState] = useState<any>({});
+  const [hideDialog, setHideDialog] = useState(true);
+  const [dialogProps, setTip] = useState({
     type: DialogType.normal,
     title: '提示',
     subText: 'tip'
-  })
+  });
 
-  const toggleHideDialog = () :void=> {
+  const [supplierData, setSupplierData] = useState<any[]>([]);
+  const [currentUserIDCode, setCurrentUserIDCode] = useState<string>('');
+  const ctx = useContext(AppContext);
+  const { getUserIDCode } = useUser(); // 使用 useUser 钩子
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const fetchUserInfo = async () => {
+      if (!ctx || !ctx.context) {
+        Logger.write("AppContext is not provided or context is undefined", LogLevel.Error);
+        return;
+      }
+      try {
+        const userEmail = ctx.context._pageContext._user.email;
+        const userIDCode = await getUserIDCode(userEmail);
+        setCurrentUserIDCode(userIDCode);
+      } catch (error) {
+        Logger.write(`Failed to fetch user info: ${error}`, LogLevel.Error);
+      }
+    };
+    fetchUserInfo().then(_ => _, _ => _);
+  }, [ctx, getUserIDCode]);
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const fetchSuppliers = async () => {
+    if (!currentUserIDCode) return; // Confirm we have user ID code
+    try {
+      const client = getAADClient();
+      const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetContact/12`, AadHttpClient.configurations.v1);
+      const result = await response.json();
+      console.log(result,"re");
+      setSupplierData(result); // 使用API返回的数据更新supplierData
+      setUn(result); // 更新未选中的供应商列表
+    } catch (error) {
+      console.error('Error fetching supplier data:', error);
+    }
+  };
+
+  const toggleHideDialog = (): void => {
     setHideDialog(!hideDialog);
   };
+
   const toggleSupplierSelection = (email: string): void => {
     setSelectedSuppliers((prev) => {
       const newSelection = new Set(prev);
@@ -95,28 +130,30 @@ const SupplierSelection: React.FC = () => {
       return newSelection;
     });
   };
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const checkFive= () => {
-    const num = contacts.filter(val => !!val?.email)
-    if(num.length === 5) {
+
+  const checkFive = ():boolean => {
+    const num = contacts.filter(val => !!val?.email);
+    if (num.length === 5) {
       setTip({
         ...dialogProps,
         subText: 'Up To 5'
-      })
-      setHideDialog(false)
-      return true
+      });
+      setHideDialog(false);
+      return true;
     }
-  }
+    return false;
+  };
+
   const handleSelect = (): void => {
-    if(checkFive()) return
-    const selectedContacts = supplierData.filter(supplier => selectedSuppliers.has(supplier.email))
-    if(selectedContacts.length > 5) {
+    if (checkFive()) return;
+    const selectedContacts = supplierData.filter(supplier => selectedSuppliers.has(supplier.email));
+    if (selectedContacts.length > 5) {
       setTip({
         ...dialogProps,
         subText: 'Up To 5'
-      })
-      setHideDialog(false)
-      return
+      });
+      setHideDialog(false);
+      return;
     }
     setContacts((prevContacts) => {
       const newContacts = [...prevContacts];
@@ -159,18 +196,20 @@ const SupplierSelection: React.FC = () => {
   ];
 
   const handleAddContacts = (): void => {
+  fetchSuppliers().then(_ => _, _ => _)
     setIsOpen(true);
   };
 
-  const handleOpenCreate = ():void => {
-    if(checkFive()) return
-    setOpen(true)
-  }
-  const closeDialog = ():void => {
-    setOpen(false)
-  }
-  const handleAdd = ():void => {
-    // 将新联系人添加到 contacts 状态
+  const handleOpenCreate = (): void => {
+    if (checkFive()) return;
+    setOpen(true);
+  };
+
+  const closeDialog = (): void => {
+    setOpen(false);
+  };
+
+  const handleAdd = (): void => {
     setContacts((prevContacts) => {
       const newContacts = [...prevContacts];
       for (let i = 0; i < newContacts.length; i++) {
@@ -184,9 +223,8 @@ const SupplierSelection: React.FC = () => {
       }
       return newContacts;
     });
-    closeDialog();  // 添加完成后关闭对话框
+    closeDialog();
   };
-
 
   return (
       <Stack>
@@ -196,6 +234,9 @@ const SupplierSelection: React.FC = () => {
             <span style={{ fontWeight: 'bold' }}>+ Click to Select</span>
             <span> (up to 5)</span>
           </div>
+          {/*<div className={classes.uploadArea} onClick={fetchSuppliers}>*/}
+          {/*  <span style={{ fontWeight: 'bold' }}>+ Fetch Supplier Data</span> /!* 新增的按钮，点击后执行fetchSuppliers *!/*/}
+          {/*</div>*/}
           <div className={classes.uploadArea} onClick={handleOpenCreate}>
             <span style={{ fontWeight: 'bold' }}>+ Click to Create New</span>
           </div>
@@ -228,14 +269,14 @@ const SupplierSelection: React.FC = () => {
             }}
             maxWidth={800}
         >
-          <Stack style={{marginBottom: 10}}>
-            <TextField placeholder="Search for a name or create a new one" onChange={(val:any) => {
-              if(val.target.value) {
-                setUn(supplierData.filter(item => item.name?.toLowerCase().includes(val.target.value.toLowerCase())))
+          <Stack style={{ marginBottom: 10 }}>
+            <TextField placeholder="Search for a name or create a new one" onChange={(val: any) => {
+              if (val.target.value) {
+                setUn(supplierData.filter(item => item.name?.toLowerCase().includes(val.target.value.toLowerCase())));
               } else {
-                setUn(supplierData)
+                setUn(supplierData);
               }
-            }} style={{width: '100%' }}/>
+            }} style={{ width: '100%' }} />
           </Stack>
           <DetailsList
               items={unSelectedSuppliers}
@@ -266,7 +307,7 @@ const SupplierSelection: React.FC = () => {
                   label="Name"
                   required
                   value={createState.name}
-                  onChange={(e, newValue) => setState({...createState, name: newValue})}
+                  onChange={(e, newValue) => setState({ ...createState, name: newValue })}
               />
             </Stack.Item>
             <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
@@ -274,21 +315,21 @@ const SupplierSelection: React.FC = () => {
                   label="Email"
                   required
                   value={createState.email}
-                  onChange={(e, newValue) => setState({...createState, email: newValue})}
+                  onChange={(e, newValue) => setState({ ...createState, email: newValue })}
               />
             </Stack.Item>
             <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
               <TextField
                   label="Title"
                   value={createState.title}
-                  onChange={(e, newValue) => setState({...createState, title: newValue})}
+                  onChange={(e, newValue) => setState({ ...createState, title: newValue })}
               />
             </Stack.Item>
             <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
               <TextField
                   label="Function"
                   value={createState.functionField}
-                  onChange={(e, newValue) => setState({...createState, functionField: newValue})}
+                  onChange={(e, newValue) => setState({ ...createState, functionField: newValue })}
               />
             </Stack.Item>
           </Stack>
