@@ -21,6 +21,7 @@ const CONST = {
   SPLITTER: "; ",
   LOG_SOURCE: "🔶gsits",
   LIBRARY_NAME: "Documents",
+  LIBRARY_RFQATTACHMENTS_NAME: "RFQ Attachments",
   azureFunctionBaseUrl: HostSettings.AzureHost,
   aadClientId: HostSettings.AadClientId,
   appInsightsKey: HostSettings.AppInsightsKey,
