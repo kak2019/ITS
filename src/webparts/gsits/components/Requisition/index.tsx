@@ -20,8 +20,8 @@ import { useTranslation } from "react-i18next";
 import { useRequisition } from "../../../../hooks/useRequisition";
 import { Spinner, SpinnerSize } from "@fluentui/react";
 import { IRequisitionGrid } from "../../../../model/requisition";
-import { useUser } from "../../../../hooks";
-import { Logger, LogLevel } from "@pnp/logging";
+// import { useUser } from "../../../../hooks";
+// import { Logger, LogLevel } from "@pnp/logging";
 import AppContext from "../../../../AppContext";
 import Pagination from "./page";
 import { getAADClient } from "../../../../pnpjsConfig";
@@ -49,7 +49,7 @@ const Requisition: React.FC = () => {
   let userEmail = "";
   const { t } = useTranslation(); // 使用 i18next 进行翻译
   const navigate = useNavigate();
-  const { getUserIDCode } = useUser(); // 引入 useUser 钩子
+  // const { getUserIDCode } = useUser(); // 引入 useUser 钩子
   const ctx = useContext(AppContext);
   if (!ctx || !ctx.context) {
     throw new Error("AppContext is not provided or context is undefined");
@@ -58,14 +58,19 @@ const Requisition: React.FC = () => {
   }
 
   console.log(userEmail);
-  const [currentUserIDCode, setCurrentUserIDCode] = useState<string>("");
+  // const [currentUserIDCode, setCurrentUserIDCode] = useState<string>("");
   const [isSearchVisible, setIsSearchVisible] = useState(true);
   const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const [isFetching, allRequisitions, , getAllRequisitions, ,] =
       useRequisition();
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [userDetails, setUserDetails] = useState({
+    role: "",
+    name: "",
+    sectionCode: "",
+    handlercode: ""
+  });
 
   // 定义 Selection，用于 DetailsList 的选择
   const [selection] = useState(new Selection({
@@ -100,16 +105,28 @@ const Requisition: React.FC = () => {
         const client = getAADClient(); // 请确保getAADClient()已正确实现
 
         // 使用模板字符串构建完整的函数URL
-        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetGPSUser/suoru.huang@udtrucks.com`;
+        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetGPSUser/${userEmail}`;
 
         const response = await client.get(
             functionUrl,
             AadHttpClient.configurations.v1
         );
 
+        // 确保解析 response 时不抛出错误
         const result = await response.json();
+console.log(result);
+        if (result && result.role && result.name && result.sectionCode && result.handlercode) {
+          // 如果所有字段都有值，更新状态
+          setUserDetails({
+            role: result.role,
+            name: result.name,
+            sectionCode: result.sectionCode,
+            handlercode: result.handlercode,
+          });
 
-        console.log(result);
+        } else {
+          console.warn("Incomplete data received:", result);
+        }
       } catch (error) {
         console.error("Error fetching GPS user props:", error);
       }
@@ -120,7 +137,7 @@ const Requisition: React.FC = () => {
         (_) => _
     );
   }, []);
-
+  console.log(userDetails);
   // 根据屏幕宽度调整列数
   useEffect(() => {
     const handleResize = (): void => {
@@ -303,28 +320,41 @@ const Requisition: React.FC = () => {
   };
   const [filteredItems, setFilteredItems] =
       useState<IRequisitionGrid[]>(allRequisitions);
-  useEffect(() => {
-    // 获取当前登录用户信息
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/explicit-function-return-type
-    const fetchUserInfo = async () => {
-      try {
-        // const userEmail = userEmail; // Replace with actual email if available
-        const userIDCode = await getUserIDCode(userEmail);
-        setCurrentUserIDCode(userIDCode);
-
-        //const userPicture = await getUserPicture(userIDCode);
-      } catch (error) {
-        Logger.write(`Failed to fetch user info: ${error}`, LogLevel.Error);
-      }
-    };
-    fetchUserInfo().catch((e) => console.log(e));
-  }, []);
+  // useEffect(() => {
+  //   // 获取当前登录用户信息
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/explicit-function-return-type
+  //   const fetchUserInfo = async () => {
+  //     try {
+  //       // const userEmail = userEmail; // Replace with actual email if available
+  //       const userIDCode = await getUserIDCode(userEmail);
+  //       // setCurrentUserIDCode(userIDCode);
+  //       //
+  //       //const userPicture = await getUserPicture(userIDCode);
+  //     } catch (error) {
+  //       Logger.write(`Failed to fetch user info: ${error}`, LogLevel.Error);
+  //     }
+  //   };
+  //   fetchUserInfo().catch((e) => console.log(e));
+  // }, []);
 
   useEffect(() => {
     getAllRequisitions();
   }, []);
 
-
+// 更新 userDetails 后初始化 filters
+  useEffect(() => {
+    if (userDetails.role === "Manager") {
+      setFilters((prev) => ({
+        ...prev,
+        section: userDetails.sectionCode || "",
+      }));
+    } else if (userDetails.role === "Buyer") {
+      setFilters((prev) => ({
+        ...prev,
+        buyer: userDetails.handlercode || "",
+      }));
+    }
+  }, [userDetails]);
   useEffect(() => {
     const result = applyFilters()
     setFilteredItems(result)
@@ -363,7 +393,7 @@ const Requisition: React.FC = () => {
         </Stack>
 
         {/* 搜索区域 */}
-        {isSearchVisible && currentUserIDCode && (
+        {isSearchVisible  && userDetails && (
             <Stack tokens={{ padding: 10 }} className="noMargin">
               <Stack
                   tokens={{ childrenGap: 10, padding: 20 }}
@@ -440,7 +470,7 @@ const Requisition: React.FC = () => {
                     <TextField
                         placeholder="Entered text"
                         style={{ width: Number(itemWidth) - 30 }}
-                        defaultValue={currentUserIDCode}
+                        value={filters.buyer}
                         onChange={(e, newValue) =>
                             setFilters((prev) => ({ ...prev, buyer: newValue || "" }))
                         }
@@ -466,6 +496,7 @@ const Requisition: React.FC = () => {
                     <TextField
                         label={t("Section")}
                         placeholder="Placeholder text"
+                        value={filters.section}
                         style={{ width: Number(itemWidth) - 30 }}
                         onChange={(e, newValue) =>
                             setFilters((prev) => ({ ...prev, section: newValue || "" }))
