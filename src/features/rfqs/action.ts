@@ -41,7 +41,8 @@ export const getAllRFQsAction = createAsyncThunk(
             "EffectiveDateRequest",
             "HandlerName",
             "RFQNo_x002e_",
-            "Created"
+            "Created",
+            "RFQType"
           )
           .top(5000)
           .skip(pageIndex * 5000)();
@@ -67,6 +68,7 @@ export const getAllRFQsAction = createAsyncThunk(
               HandlerName: item.HandlerName,
               RFQNo: item.RFQNo_x002e_,
               Created: item.Created,
+              RFQType: item.RFQType,
             } as IRFQGrid;
           })
         );
@@ -179,7 +181,8 @@ export const getRFQAction = createAsyncThunk(
             "EffectiveDateRequest",
             "HandlerName",
             "RFQNo_x002e_",
-            "Created"
+            "Created",
+            "RFQType"
           )
           .top(5000)
           .skip(pageIndexRFQ * 5000)();
@@ -205,6 +208,7 @@ export const getRFQAction = createAsyncThunk(
               HandlerName: item.HandlerName,
               RFQNo: item.RFQNo_x002e_,
               Created: item.Created,
+              RFQType: item.RFQType,
             } as IRFQGrid;
           })
         );
@@ -263,6 +267,7 @@ export const updateRFQAction = createAsyncThunk(
           EffectiveDateRequest: rfq.EffectiveDateRequest,
           HandlerName: rfq.HandlerName,
           RFQNo_x002e_: rfq.RFQNo,
+          RFQType: rfq.RFQType,
         });
     } catch (err) {
       Logger.write(
@@ -302,6 +307,7 @@ export const createRFQAction = createAsyncThunk(
         EffectiveDateRequest: rfq.EffectiveDateRequest,
         HandlerName: rfq.HandlerName,
         RFQNo_x002e_: rfq.RFQNo,
+        RFQType: rfq.RFQType,
       });
     } catch (err) {
       Logger.write(

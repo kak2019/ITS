@@ -20,6 +20,7 @@ export interface IRFQGrid {
   HandlerName?: string;
   RFQNo?: string;
   Created?: Date;
+  RFQType?: string;
 }
 export interface IRFQRequisition {
   RFQ: IRFQGrid;
