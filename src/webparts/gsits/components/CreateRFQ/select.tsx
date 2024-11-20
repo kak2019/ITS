@@ -159,7 +159,7 @@ const SupplierSelection: React.FC = () => {
       const newContacts = [...prevContacts];
       selectedContacts.forEach((contact, index) => {
         if (index < newContacts.length) {
-          newContacts[index] = { name: contact.name, email: contact.email };
+          newContacts[index] = { name: contact.name, email: contact.email, title: contact.title, functions: contact.functions };
         }
       });
       return newContacts;
@@ -196,7 +196,7 @@ const SupplierSelection: React.FC = () => {
   ];
 
   const handleAddContacts = (): void => {
-  fetchSuppliers().then(_ => _, _ => _)
+    fetchSuppliers().then(_ => _, _ => _)
     setIsOpen(true);
   };
 
@@ -330,8 +330,8 @@ const SupplierSelection: React.FC = () => {
             <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
               <TextField
                   label="Function"
-                  value={createState.functionField}
-                  onChange={(e, newValue) => setState({ ...createState, functionField: newValue })}
+                  value={createState.functions}
+                  onChange={(e, newValue) => setState({ ...createState, functions: newValue })}
               />
             </Stack.Item>
           </Stack>

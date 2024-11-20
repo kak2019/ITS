@@ -8,7 +8,8 @@ import {
     DetailsList,
     DetailsListLayoutMode,
     SelectionMode,
-    PrimaryButton, IComboBox
+    PrimaryButton, IComboBox,
+    Dialog, DialogType, DialogFooter, DefaultButton
 } from '@fluentui/react';
 import FileUploader from './upload';
 import SupplierSelection from './select';
@@ -115,6 +116,17 @@ const Requisition: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [formattedDate, setFormattedDate] = useState<string>(''); // 存储格式化后日期
 
+    const [isRFQDialogVisible, setIsRFQDialogVisible] = useState(false);
+    const [isLeavePageDialogVisible, setIsLeavePageDialogVisible] = useState(false);
+
+    // Handlers to open dialogs
+    const openRFQDialog = () => setIsRFQDialogVisible(true);
+    const openLeavePageDialog = () => setIsLeavePageDialogVisible(true);
+
+    // Handlers to close dialogs
+    const closeRFQDialog = () => setIsRFQDialogVisible(false);
+    const closeLeavePageDialog = () => setIsLeavePageDialogVisible(false);
+
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const formatDate = (date: Date) => {
         const year = date.getFullYear();
@@ -200,7 +212,7 @@ const Requisition: React.FC = () => {
                         />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
-                        <Dropdown label="Order Type" placeholder="Please Select"  options={state.selectedItems[0].RequisitionType ? [{key: 'SAPP Standalone Prototype Order', text: 'SAPP Standalone Prototype Order'}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
+                        <Dropdown label="Order Type" placeholder="Please Select"  options={state.selectedItems[0].RequisitionType==="PP" ? [{key: 'SAPP Standalone Prototype Order', text: 'SAPP Standalone Prototype Order'}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '100%', maxWidth: '100%' } }}>
                         <FileUploader title={t('Add RFQ Attachments')} initalNum={4} />
@@ -221,10 +233,46 @@ const Requisition: React.FC = () => {
             <Stack horizontal tokens={{ childrenGap: 10, padding: 10 }}>
                 <PrimaryButton
                     text={t('Back')}
-                    onClick={() => navigate('/requisition')}
+                    onClick={() => {
+                        openLeavePageDialog()
+                    }}
                 />
-                <PrimaryButton text={t('Submit')} />
+                <PrimaryButton text={t('Submit')} onClick={() => {
+                    openRFQDialog()
+                }} />
             </Stack>
+
+            {/* RFQ Dialog */}
+            <Dialog
+                hidden={!isRFQDialogVisible}
+                onDismiss={closeRFQDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Confirmation',
+                    subText: 'Are you sure to send RFQ? Notification email will be sent to selected supplier contact.',
+                }}
+            >
+                <DialogFooter>
+                    <PrimaryButton onClick={closeRFQDialog} text="Yes" />
+                    <DefaultButton onClick={closeRFQDialog} text="No" />
+                </DialogFooter>
+            </Dialog>
+
+            {/* Leave Page Dialog */}
+            <Dialog
+                hidden={!isLeavePageDialogVisible}
+                onDismiss={closeLeavePageDialog}
+                dialogContentProps={{
+                    type: DialogType.normal,
+                    title: 'Warning',
+                    subText: 'Are you sure to leave this page? All filled contents will be lost.',
+                }}
+            >
+                <DialogFooter>
+                    <PrimaryButton onClick={() => navigate('/requisition')} text="Yes" />
+                    <DefaultButton onClick={closeLeavePageDialog} text="No" />
+                </DialogFooter>
+            </Dialog>
         </Stack>
     );
 };
