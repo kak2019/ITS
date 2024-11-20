@@ -8,7 +8,7 @@ import {
     DetailsList,
     DetailsListLayoutMode,
     SelectionMode,
-    PrimaryButton
+    PrimaryButton, IComboBox
 } from '@fluentui/react';
 import FileUploader from './upload';
 import SupplierSelection from './select';
@@ -19,15 +19,37 @@ import { AadHttpClient } from '@microsoft/sp-http';
 import { CONST } from '../../../../config/const';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const fetchData = async (parmaValue: string) => {
+const fetchData = async (parmaValue: string): Promise<any | null> => {
     try {
         const client = getAADClient();
-        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetParma/${parmaValue}`;
+        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetSupplierInfo/${parmaValue}`;
         const response = await client.get(functionUrl, AadHttpClient.configurations.v1);
+
+        // 检查响应状态
+        if (!response.ok) {
+            console.error('Error fetching data:', response.statusText);
+            return null; // 返回 null 如果响应失败
+        }
+
         const result = await response.json();
-        console.log(result);
+        console.log('Fetched data:', result);
+        return result; // 返回结果
     } catch (error) {
         console.error('Error fetching data:', error);
+        return null; // 发生异常时返回 null
+    }
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const fetchDatadropdown = async (input: string): Promise<[]> => {
+    try {
+        const client = getAADClient();
+        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetParma?q=${input}`;
+        const response = await client.get(functionUrl, AadHttpClient.configurations.v1);
+        return await response.json(); // 返回 JSON 数据
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return []; // 或者抛出错误，根据你的逻辑需求
     }
 };
 
@@ -36,22 +58,17 @@ const Requisition: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const state = location.state;
+// 新状态定义
+    const [parmaDetails, setParmaDetails] = useState<{ name: string; country: string }>({ name: '', country: '' });
 
     const [columnsPerRow, setColumnsPerRow] = useState(5);
     const [form, setForm] = useState({ parma: '' });
     const [filteredOptions, setFilteredOptions] = useState<IComboBoxOption[]>([]);
-    const options: IComboBoxOption[] = [
-        { key: 'apple', text: 'Apple' },
-        { key: 'aanana', text: 'aanana' },
-        { key: 'aherry', text: 'aherry' },
-        { key: 'date', text: 'Date' },
-        { key: 'grape', text: 'Grape' },
-        { key: 'kiwi', text: 'Kiwi' }
-    ];
+    const [selectedValue, setSelectedValue] = useState<string | undefined>();
     const dropdownOptions = [
-        { key: 'optional', text: 'Optional' },
-        { key: 'required', text: 'Required' },
-        { key: 'select', text: 'Please Select' },
+        { key: 'BLPR Blanket Production Order', text: 'BLPR Blanket Production Orde' },
+        { key: 'QUP Quantity Production Order', text: 'QUP Quantity Production Order' },
+        { key: 'SAPR Standalone Production Orde', text: 'SAPR Standalone Production Orde' },
     ];
     useEffect(() => {
         const handleResize = (): void => {
@@ -71,28 +88,59 @@ const Requisition: React.FC = () => {
     };
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    const handleInputChange = (text: string) => {
-        setForm({ ...form, parma: text });
+    const handleInputChange = async (text: string) => {
+        setForm({...form, parma: text});
         if (text) {
-            setFilteredOptions(
-                options.filter(option =>
-                    option.text.toLowerCase().startsWith(text.toLowerCase())
-                )
-            );
+            try {
+                const response = await fetchDatadropdown(text);
+                console.log(response,"eeee");
+                if (response && Array.isArray(response)) {
+                    setFilteredOptions(
+                        response.map((item: string) => ({
+                            key: item,    // 字符串本身作为选项的 key
+                            text: item    // 字符串本身作为选项的 text
+                        }))
+                    );
+                }
+
+            } catch (error) {
+                console.error('Error fetching options:', error);
+            }
         } else {
-            setFilteredOptions(options);
+            setFilteredOptions([]);
         }
     };
+// 获取当前日期
+    const today = new Date();
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+    const [formattedDate, setFormattedDate] = useState<string>(''); // 存储格式化后日期
 
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+    const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}${month}${day}`;
+    };
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const handleBlur = async () => {
         try {
-            await fetchData(form.parma);
+            const data = await fetchData(form.parma);
+            if (data) {
+                console.log('Fetched data on blur:', data); // 输出返回结果
+                // 更新状态
+                setParmaDetails({ name: data.name, country: data.country });
+            }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Error fetching data on blur:', error);
         }
     };
-
+    const handleChange = (event: React.FormEvent<IComboBox>, option?: IComboBoxOption):void => {
+        if (option) {
+            setSelectedValue(option.key as string);
+            setForm({ ...form, parma: option.text });
+        }
+    };
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
     const columns = [
@@ -110,7 +158,7 @@ const Requisition: React.FC = () => {
         { key: 'HandlerName', name: t('Handler Name'), fieldName: 'HandlerName', minWidth: 100 },
         { key: 'Status', name: t('Status'), fieldName: 'Status', minWidth: 80 },
     ];
-
+    console.log(selectedDate,formattedDate);
     return (
         <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
             <h2 className="mainTitle">{t('New Parts RFQ Creation')}</h2>
@@ -124,25 +172,35 @@ const Requisition: React.FC = () => {
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
                         <ComboBox
                             label={t('Parma')}
-                            options={filteredOptions.length ? filteredOptions : options}
+                            options={filteredOptions}
                             autoComplete="on"
                             allowFreeform={true}
                             openOnKeyboardFocus={true}
                             onInputValueChange={handleInputChange}
                             onBlur={handleBlur}
-                            text={form.parma}
+                            // text={form.parma}
+                            selectedKey={selectedValue}
                             styles={comboBoxStyles}
-                            style={{ width: '100%' }}
+                            onChange={handleChange}
                         />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%', alignSelf: 'flex-end' } }}>
-                        Nelson(Changzhou) Tubing Co,Ltd
+                        {parmaDetails.name}
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
-                        <DatePicker label={t('RFQ Due Date')} placeholder="yymmww" />
+                        <DatePicker label={t('RFQ Due Date')}  minDate={today}
+                                    value={selectedDate} // 显示的日期值
+                                    onSelectDate={(date) => {
+                                        if (date) {
+                                            setSelectedDate(date); // 设置内部日期状态
+                                            const formatted = formatDate(date); // 格式化日期
+                                            setFormattedDate(formatted); // 更新格式化后日期状态
+                                        }
+                                    }}
+                        />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
-                        <Dropdown label="Order Type" placeholder="Please Select" multiSelect options={form.parma ? [{key: form.parma, text: form.parma}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
+                        <Dropdown label="Order Type" placeholder="Please Select"  options={state.selectedItems[0].RequisitionType ? [{key: 'SAPP Standalone Prototype Order', text: 'SAPP Standalone Prototype Order'}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '100%', maxWidth: '100%' } }}>
                         <FileUploader title={t('Add RFQ Attachments')} initalNum={4} />

@@ -64,7 +64,7 @@ const classes = mergeStyleSets({
 });
 
 const SupplierSelection: React.FC = () => {
-  const [contacts, setContacts] = useState<(null | { name: string; email: string })[]>(Array(5).fill(null));
+  const [contacts, setContacts] = useState<(null | { name: string; email: string;title?:string;functions?:string })[]>(Array(5).fill(null));
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSuppliers, setSelectedSuppliers] = useState<Set<string>>(new Set());
   const [unSelectedSuppliers, setUn] = useState<any[]>([]);
@@ -105,7 +105,7 @@ const SupplierSelection: React.FC = () => {
     if (!currentUserIDCode) return; // Confirm we have user ID code
     try {
       const client = getAADClient();
-      const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetContact/12`, AadHttpClient.configurations.v1);
+      const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetContact/18`, AadHttpClient.configurations.v1);
       const result = await response.json();
       console.log(result,"re");
       setSupplierData(result); // 使用API返回的数据更新supplierData
@@ -191,8 +191,8 @@ const SupplierSelection: React.FC = () => {
     },
     { key: 'column2', name: 'Name', fieldName: 'name', minWidth: 100 },
     { key: 'column3', name: 'Email', fieldName: 'email', minWidth: 150 },
-    { key: 'column4', name: 'Role', fieldName: 'role', minWidth: 150 },
-    { key: 'column5', name: 'Department', fieldName: 'department', minWidth: 150 },
+    { key: 'column4', name: 'Title', fieldName: 'title', minWidth: 150 },
+    { key: 'column5', name: 'Functions', fieldName: 'functions', minWidth: 150 },
   ];
 
   const handleAddContacts = (): void => {
@@ -217,6 +217,8 @@ const SupplierSelection: React.FC = () => {
           newContacts[i] = {
             name: createState.name,
             email: createState.email,
+            title: createState.title,
+            functions: createState.functions,
           };
           break;
         }
@@ -247,7 +249,7 @@ const SupplierSelection: React.FC = () => {
               <div key={index} className={`${classes.fileItem} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
                 {contact ? (
                     <>
-                      <span>{contact.name} - {contact.email}</span>
+                      <span>{contact.name} - {contact.email} - {contact.title} - {contact.functions} </span>
                       <IconButton
                           iconProps={{ iconName: 'Delete' }}
                           onClick={() => handleRemoveContact(index)}
