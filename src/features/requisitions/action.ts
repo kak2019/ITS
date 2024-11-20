@@ -60,9 +60,9 @@ export const getAllRequisitionsAction = createAsyncThunk(
               Project: item.Pproject,
               RequiredWeek: item.RequiredWeek,
               CreateDate:
-                item.CreateDate === null
+                item.CreateDate === null || item.CreateDate === undefined
                   ? null
-                  : stringToDate(item.CreatedDate),
+                  : stringToDate(item.CreateDate),
               RfqNo: item.RFQNumber,
               Parma: item.Parma,
               PartDescription: item.PartDescription,
@@ -119,7 +119,8 @@ export const updateRequisitionAction = createAsyncThunk(
           OrderQty: Requisition.OrderQty,
           RequiredWeek: Requisition.RequiredWeek,
           CreateDate:
-            Requisition.CreateDate === null
+            Requisition.CreateDate === null ||
+            Requisition.CreateDate === undefined
               ? null
               : dateToString(Requisition.CreateDate!),
           RequisitionBuyer: Requisition.ReqBuyer,
