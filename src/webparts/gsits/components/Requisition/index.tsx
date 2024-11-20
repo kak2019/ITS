@@ -8,12 +8,13 @@ import { useTranslation } from 'react-i18next';
 import { useRequisition } from '../../../../hooks/useRequisition';
 import { Spinner, SpinnerSize } from '@fluentui/react';
 import { IRequisitionGrid } from '../../../../model/requisition'
-import { useUser } from '../../../../hooks/useUser';
+import { useUser } from '../../../../hooks';
 import { Logger, LogLevel } from '@pnp/logging';
 import AppContext from '../../../../AppContext';
-// import { getAADClient } from '../../../../pnpjsConfig';
-// import { AadHttpClient } from '@microsoft/sp-http';
-// import { CONST } from '../../../../config/const';
+import Pagination from './page'
+import { getAADClient } from '../../../../pnpjsConfig';
+import { AadHttpClient } from '@microsoft/sp-http';
+import { CONST } from '../../../../config/const';
 // 定义项目数据类型
 interface Item {
     key: number;
@@ -31,7 +32,7 @@ interface Item {
     handlerName: string;
     status: string;
 }
-
+const PAGE_SIZE = 20
 const Requisition: React.FC = () => {
     let userEmail = ""
     const { t } = useTranslation(); // 使用 i18next 进行翻译
@@ -54,6 +55,12 @@ const Requisition: React.FC = () => {
         getAllRequisitions,
         ,
     ] = useRequisition();
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const handlePageChange = (pageNumber: number):void => {
+        setCurrentPage(pageNumber);
+    };
+
 
     // 定义 Selection，用于 DetailsList 的选择
     const selection = new Selection({
@@ -72,24 +79,27 @@ const Requisition: React.FC = () => {
     const toggleSearchVisibility = (): void => {
         setIsSearchVisible(!isSearchVisible);
     };
-    // useEffect((): void => {
-    //     // Dome function app
-    //     const fetchData = async (): Promise<void> => {
-    //         try {
-    //             const client = getAADClient();
-    //             const response = await client.get(`${CONST.azureFunctionBaseUrl}/api/GetParma?q=981`, AadHttpClient.configurations.v1);
-    //             const result = await response.json();
-    //             console.log(result);
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+        const fetchData = async () => {
+            try {
+                const client = getAADClient(); // 请确保getAADClient()已正确实现
 
-    //         }
-    //         catch (error) {
-    //             console.error(error);
+                // 使用模板字符串构建完整的函数URL
+                const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetGPSUser/suoru.huang@udtrucks.com`;
 
-    //         }
-    //     };
-    //     fetchData().then(_ => _, _ => _);
+                const response = await client.get(functionUrl, AadHttpClient.configurations.v1);
 
-    // }, []);
+                const result = await response.json();
+
+                console.log(result);
+            } catch (error) {
+                console.error('Error fetching GPS user props:', error);
+            }
+        };
+
+        fetchData().then(_ => _, _ => _);
+    }, []);
 
     // 根据屏幕宽度调整列数
     useEffect(() => {
@@ -133,7 +143,11 @@ const Requisition: React.FC = () => {
         { key: 'Sent to GPS', text: 'Sent to GPS' },
     ];
     const QualifierType = [
-        { key: '', text: '' },
+        { key: 'V', text: 'V' },
+        { key: 'X', text: 'X' },
+        { key: '4', text: '4' },
+        { key: '7', text: '7' },
+
     ];
 
     const [filters, setFilters] = useState<{
@@ -225,7 +239,10 @@ const Requisition: React.FC = () => {
 
     useEffect(() => {
         getAllRequisitions();
+
     }, []);
+    console.log("all",allRequisitions);
+    const paginatedItems = filteredItems.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
     return (
         <Stack className="Requisition" tokens={{ childrenGap: 20, padding: 20 }}>
 
@@ -253,17 +270,17 @@ const Requisition: React.FC = () => {
             </Stack>
 
             {/* 搜索区域 */}
-            {isSearchVisible && (
+            {isSearchVisible && currentUserIDCode && (
                 <Stack tokens={{ padding: 10 }} className="noMargin">
                     <Stack tokens={{ childrenGap: 10, padding: 20 }} styles={{ root: { backgroundColor: '#CCEEFF', borderRadius: '4px' } }}>
                         <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start">
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <Dropdown label={t("Requisition Type")} placeholder="Please Select" options={RequisitionsType} style={{ width: Number(itemWidth) - 30 }}
-                                    onChange={(e, option) => setFilters(prev => ({ ...prev, requisitionType: String(option?.key || '') }))}
+                                          onChange={(e, option) => setFilters(prev => ({ ...prev, requisitionType: String(option?.key || '') }))}
                                 />
                             </Stack.Item>
                             {/* <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label={t("Buyer")} placeholder="Entered text" style={{width: Number(itemWidth) - 30}} 
+                                <TextField label={t("Buyer")} placeholder="Entered text" style={{width: Number(itemWidth) - 30}}
                                 defaultValue={currentUserIDCode}
                                 onChange={(e, newValue) => setFilters(prev => ({ ...prev, buyer: newValue || '' }))}
                                 />
@@ -296,82 +313,87 @@ const Requisition: React.FC = () => {
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Parma")} placeholder="Placeholder text" style={{ width: Number(itemWidth) - 30 }}
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, parma: newValue || '' }))}
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, parma: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Section")} placeholder="Placeholder text" style={{ width: Number(itemWidth) - 30 }}
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, section: newValue || '' }))}
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, section: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <Dropdown label={t("Status")} placeholder="Optional" options={StatesType} style={{ width: Number(itemWidth) - 30 }}
-                                    onChange={(e, option) => setFilters(prev => ({ ...prev, status: String(option?.key || '') }))}
+                                <Dropdown label={t("Status")} placeholder="Optional" multiSelect options={StatesType} style={{ width: Number(itemWidth) - 30 }}
+                                          onChange={(e, option) => setFilters(prev => ({ ...prev, status: String(option?.key || '') }))}
                                 />
                             </Stack.Item>
 
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Part Number")} placeholder="Placeholder text"
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, partNumber: newValue || '' }))}
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, partNumber: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <Dropdown label={t("Qualifier")} placeholder="Optional" options={QualifierType}
-                                    onChange={(e, option) => setFilters(prev => ({ ...prev, qualifier: String(option?.key || '') }))}
+                                          onChange={(e, option) => setFilters(prev => ({ ...prev, qualifier: String(option?.key || '') }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Project")} placeholder="Placeholder text"
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, project: newValue || '' }))}
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, project: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Material User")}
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, materialUser: newValue || '' }))}
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, materialUser: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("RFQ Number")}
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, rfqNumber: newValue || '' }))} />
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, rfqNumber: newValue || '' }))} />
                             </Stack.Item>
 
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <TextField label={t("Required Week From")} placeholder="YYYYWW"
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, requiredWeekFrom: newValue || '' }))}
+                                           onChange={(e, newValue) => {
+                                               if(isValidYYYYWW(newValue)) {
+                                                   setFilters(prev => ({ ...prev, requiredWeekTo: addWeeksToYYYYWW(newValue, 12) || '' }))
+                                               }
+                                               setFilters(prev => ({ ...prev, requiredWeekFrom: newValue || '' })
+                                               )}}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
-                                <TextField label={t("Required Week To")} placeholder="YYYYWW"
-                                    onChange={(e, newValue) => setFilters(prev => ({ ...prev, requiredWeekTo: newValue || '' }))}
+                                <TextField label={t("Required Week To")} value={filters.requiredWeekTo} placeholder="YYYYWW"
+                                           onChange={(e, newValue) => setFilters(prev => ({ ...prev, requiredWeekTo: newValue || '' }))}
                                 />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <DatePicker label={t("Created Date From")} placeholder="Select Date" ariaLabel="Select a date"
-                                    onSelectDate={(date) =>
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            createdDateFrom: date || null, // 确保 date 为 null，而不是 undefined
-                                        }))
-                                    }
+                                            onSelectDate={(date) =>
+                                                setFilters(prev => ({
+                                                    ...prev,
+                                                    createdDateFrom: date || null, // 确保 date 为 null，而不是 undefined
+                                                }))
+                                            }
 
                                 />
 
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}>
                                 <DatePicker label={t("Created Date To")} placeholder="Select Date" ariaLabel="Select a date"
-                                    onSelectDate={(date) =>
-                                        setFilters(prev => ({
-                                            ...prev,
-                                            createdDateTo: date || null, // 确保 date 为 null，而不是 undefined
-                                        }))
-                                    } />
+                                            onSelectDate={(date) =>
+                                                setFilters(prev => ({
+                                                    ...prev,
+                                                    createdDateTo: date || null, // 确保 date 为 null，而不是 undefined
+                                                }))
+                                            } />
                             </Stack.Item>
                             <Stack.Item grow styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth, textAlign: 'right' } }}>
                                 <PrimaryButton text={t("Search")} styles={{ root: { marginTop: 28, border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black', borderRadius: '4px', width: 150 } }}
-                                    onClick={() => {
-                                        const result = applyFilters();
-                                        setFilteredItems(result);
-                                    }} />
+                                               onClick={() => {
+                                                   const result = applyFilters();
+                                                   setFilteredItems(result);
+                                               }} />
                             </Stack.Item>
                         </Stack>
                     </Stack>
@@ -383,40 +405,48 @@ const Requisition: React.FC = () => {
             {isFetching ? (
                 <Spinner label={t('Loading...')} size={SpinnerSize.large} />
             ) : (
-                <DetailsList
-                    className="detailList"
-                    items={filteredItems}//filteredItems allRequisitions
-                    columns={columns}
-                    setKey="set"
-                    selection={selection}
-                    layoutMode={DetailsListLayoutMode.fixedColumns}
-                    styles={{
-                        root: { backgroundColor: '#FFFFFF', border: '1px solid #ddd', borderRadius: '4px' },
-                        headerWrapper: {
-                            backgroundColor: "#AFAFAF", selectors: {
-                                '.ms-DetailsHeader': {
-                                    backgroundColor: '#BDBDBD',
-                                    fontWeight: 600,
-                                },
+                <>
+                    <DetailsList
+                        className="detailList"
+                        items={paginatedItems}//filteredItems allRequisitions
+                        columns={columns}
+                        setKey="set"
+                        selection={selection}
+                        layoutMode={DetailsListLayoutMode.fixedColumns}
+                        styles={{
+                            root: { backgroundColor: '#FFFFFF', border: '1px solid #ddd', borderRadius: '4px' },
+                            headerWrapper: {
+                                backgroundColor: "#AFAFAF", selectors: {
+                                    '.ms-DetailsHeader': {
+                                        backgroundColor: '#BDBDBD',
+                                        fontWeight: 600,
+                                    },
+                                }
                             }
-                        }
-                    }}
-                    viewport={{
-                        height: 0,
-                        width: 0
-                    }}
-                    onRenderDetailsFooter={() => {
-                        const el = document.getElementsByClassName('ms-DetailsHeader')[0]
-                        const width = el && el.clientWidth || '100%'
-                        return (
-                            <div style={{ width: width, height: '30px', backgroundColor: '#BDBDBD' }} />
-                        )
-                    }}
-                    selectionPreservedOnEmptyClick={true}
-                    ariaLabelForSelectionColumn="Toggle selection"
-                    ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-                    checkButtonAriaLabel="select row"
-                />
+                        }}
+                        viewport={{
+                            height: 0,
+                            width: 0
+                        }}
+                        onRenderDetailsFooter={() => {
+                            const el = document.getElementsByClassName('ms-DetailsHeader')[0]
+                            const width = el && el.clientWidth || '100%'
+                            return (
+                                <div style={{ width: width, height: '30px', backgroundColor: '#BDBDBD' }} />
+                            )
+                        }}
+                        selectionPreservedOnEmptyClick={true}
+                        ariaLabelForSelectionColumn="Toggle selection"
+                        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                        checkButtonAriaLabel="select row"
+                    />
+                    <Pagination
+                        totalItems={filteredItems.length}
+                        pageSize={PAGE_SIZE}
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                    />
+                </>
             )}
 
             {/* 底部按钮 */}
@@ -433,3 +463,66 @@ const Requisition: React.FC = () => {
 };
 
 export default Requisition;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-function-return-type
+function isValidYYYYWW(dateStr:any) {
+    // 正则表达式匹配 yyyyww 格式
+    const pattern = /^\d{4}(0[1-9]|[1-4][0-9]|5[0-3])$/;
+
+    if (!pattern.test(dateStr)) {
+        return false;
+    }
+
+    const year = parseInt(dateStr.slice(0, 4), 10);
+    const week = parseInt(dateStr.slice(4), 10);
+
+    // 使用 Date 对象验证日期合法性
+    try {
+        // 计算第一个日期
+        const firstDay = new Date(year, 0, 1);
+        const dayOfWeek = firstDay.getDay();
+        const dayOffset = (dayOfWeek <= 4 ? dayOfWeek - 1 : dayOfWeek - 8);
+        const firstWeekStart = new Date(firstDay);
+        firstWeekStart.setDate(firstWeekStart.getDate() - dayOffset + (week - 1) * 7);
+
+        // 确定日期是否在同一年
+        return firstWeekStart.getFullYear() === year;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+        return false;
+    }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-function-return-type
+function addWeeksToYYYYWW(dateStr:any, weeksToAdd:any) {
+    // 解析输入字符串
+    const year = parseInt(dateStr.slice(0, 4), 10);
+    const week = parseInt(dateStr.slice(4), 10);
+
+    // 计算该年的第一周的开始日期（ISO标准）
+    const firstDay = new Date(year, 0, 1);
+    const dayOfWeek = firstDay.getUTCDay();
+    const correction = dayOfWeek <= 4 ? dayOfWeek - 1 : dayOfWeek - 8;
+    const firstWeekStart = new Date(firstDay.getTime() - correction * 24 * 60 * 60 * 1000);
+
+    // 计算目标周的开始日期
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const targetDate: any = new Date(firstWeekStart.getTime() + (week - 1 + weeksToAdd) * 7 * 24 * 60 * 60 * 1000);
+
+    // 计算目标日期的年和周数
+    const targetYear = targetDate.getUTCFullYear();
+
+    // 计算目标年的一月四日，以此计算出ISO周
+    const jan4 = new Date(targetYear, 0, 4);
+    const jan4DayOfWeek = jan4.getUTCDay();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jan4FirstWeekStart: any = new Date(jan4.getTime() - (jan4DayOfWeek <= 4 ? jan4DayOfWeek - 1 : jan4DayOfWeek - 8) * 24 * 60 * 60 * 1000);
+
+    const diff = targetDate - jan4FirstWeekStart;
+    const targetWeek = Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+    // 返回计算结果
+    return `${targetYear}${String(targetWeek).padStart(2, '0')}`;
+}
+
+

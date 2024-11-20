@@ -7,16 +7,38 @@ import SupplierSelection from './select';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { getAADClient } from '../../../../pnpjsConfig';
+import { AadHttpClient } from '@microsoft/sp-http';
+import { CONST } from '../../../../config/const';
+// 提取 fetchData 函数
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const fetchData = async (parmaValue:string) => {
+    try {
+        const client = getAADClient();
 
+        // 使用模板字符串构建完整的函数URL
+        const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetParma/${parmaValue}`;
+
+        // 请求数据
+        const response = await client.get(functionUrl, AadHttpClient.configurations.v1);
+
+        // 解析响应
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+};
 
 const Requisition: React.FC = () => {
     const { t } = useTranslation(); // 使用 i18next 进行翻译
     const navigate = useNavigate();
     const [columnsPerRow, setColumnsPerRow] = useState(5); // 默认每行5列
-    const location = useLocation()
+    const location = useLocation();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const state: any = location.state
-    console.log(state)
+    const state: any = location.state;
+    console.log(state);
+
     // 根据屏幕宽度调整列数
     useEffect(() => {
         const handleResize = (): void => {
@@ -29,10 +51,11 @@ const Requisition: React.FC = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
- // 跳转到 Create RFQ 页面，并传递选中的记录
- const handleBack = ():void => {
-    navigate('/requisition');
-};
+
+    // 跳转到 Create RFQ 页面，并传递选中的记录
+    const handleBack = ():void => {
+        navigate('/requisition');
+    };
 
     const itemWidth = `calc(${100 / columnsPerRow}% - ${(columnsPerRow - 1) * 10 / columnsPerRow}px)`;
 
@@ -52,37 +75,35 @@ const Requisition: React.FC = () => {
         { key: 'Status', name: t('Status'), fieldName: 'Status', minWidth: 80 },
     ];
 
-    // const items = new Array(10).fill(0).map((_, index) => ({
-    //     key: index,
-    //     partNo: '345678901234...',
-    //     qualifier: '✔',
-    //     partDescription: 'FLY WHEEL',
-    //     materialUser: '2920',
-    //     reqType: 'np',
-    //     annualQty: '999999',
-    //     orderQty: '999999',
-    //     reqWeekFrom: 'yyyymmww',
-    //     createdDate: 'yyyymmww',
-    //     rfqNo: '1234567',
-    //     reqBuyer: 'UDT 0001',
-    //     handlerName: 'UD Taro',
-    //     status: 'RFQ Sent',
-    // }));
-
     const dropdownOptions = [
         { key: 'optional', text: 'Optional' },
         { key: 'required', text: 'Required' },
         { key: 'select', text: 'Please Select' },
     ];
 
+    const [form, setForm] = React.useState({
+        parma: ''
+    });
+
     return (
         <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
             <h2 className='mainTitle'>{t("New Parts RFQ Creation")}</h2>
             <Stack className='noMargin' horizontal tokens={{ childrenGap: 30, padding: 20 }} styles={{ root: { backgroundColor: '#CCEEFF', borderRadius: '4px', marginBottom: '5px', alignItems: 'flex-start' } }} >
                 <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start" styles={{ root: { width: '50%' } }}>
-                    {/* 控制每个 Stack.Item 的宽度 */}
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%' } }}>
-                        <TextField label="Parma" placeholder="Entered text" style={{ width: '100%' }} />
+                        <TextField
+                            value={form.parma}
+                            label="Parma"
+                            placeholder="Entered text"
+                            onChange={(val) =>
+                                setForm({
+                                    ...form,
+                                    parma: val.currentTarget.value
+                                })
+                            }
+                            onBlur={() => fetchData(form.parma)} // onBlur 事件
+                            style={{ width: '100%' }}
+                        />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', width: '50%', alignSelf: 'flex-end' } }}>
                         Nelson(Changzhou) Tubing Co,Ltd
@@ -91,14 +112,13 @@ const Requisition: React.FC = () => {
                         <DatePicker label="RFQ Due Date" placeholder="yymmww" />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '40%', maxWidth: '50%' } }}>
-                        <Dropdown label="Order Type" placeholder="Please Select" multiSelect options={dropdownOptions} style={{ width: Number(itemWidth) - 30 }} />
+                        <Dropdown label="Order Type" placeholder="Please Select" multiSelect options={form.parma ? [{key: form.parma, text: form.parma}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
                     </Stack.Item>
                     <Stack styles={{ root: { width: '100%' } }}>
                         <FileUploader title="Add RFQ Attachments" initalNum={4} />
                     </Stack>
                 </Stack>
                 <Stack horizontal wrap tokens={{ childrenGap: 10 }} verticalAlign="start" styles={{ root: { width: '50%' } }}>
-                    {/* 控制每个 Stack.Item 的宽度 */}
                     <Stack grow styles={{ root: { width: '100%' } }}>
                         <SupplierSelection />
                     </Stack>
@@ -108,7 +128,6 @@ const Requisition: React.FC = () => {
                 </Stack>
             </Stack>
 
-            {/* 表格和按钮区域 */}
             <h3 className="mainTitle noMargin">{t("Selected Parts")}</h3>
             <DetailsList
                 className="detailList"
@@ -116,7 +135,7 @@ const Requisition: React.FC = () => {
                 columns={columns}
                 setKey="set"
                 layoutMode={DetailsListLayoutMode.fixedColumns}
-                selectionMode={SelectionMode.none} // 取消单选和多选
+                selectionMode={SelectionMode.none}
 
                 styles={{
                     root: { backgroundColor: '#FFFFFF', border: '1px solid #ddd', borderRadius: '4px' },
@@ -150,19 +169,14 @@ const Requisition: React.FC = () => {
                 <PrimaryButton
                     text={t('Back')}
                     styles={{ root: { border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black' } }}
-                onClick={handleBack}
+                    onClick={handleBack}
                 />
                 <PrimaryButton
                     text={t('Submit')}
                     styles={{ root: { border: 'none', backgroundColor: '#99CCFF', height: 36, color: 'black' } }}
-                // onClick={handleCreateRFQ}
                 />
             </Stack>
         </Stack>
-
-
-
-
     );
 };
 
