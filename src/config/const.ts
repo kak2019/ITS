@@ -13,7 +13,7 @@ export class HostSettings {
   }
 }
 const CONST = {
-  LIST_NAME_REQUISITION: "Requisition",
+  LIST_NAME_REQUISITION: "Requisitions",
   LIST_NAME_RFQ: "RFQs",
   LIST_NAME_USERMAPPING: "UserSupplierMapping",
   LIST_NAME_USERROLE: "User Role",
