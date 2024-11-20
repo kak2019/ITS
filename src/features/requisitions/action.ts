@@ -78,7 +78,8 @@ export const getAllRequisitionsAction = createAsyncThunk(
         hasNext = response.length === 5000;
         pageIndex += 1;
       }
-      return items;
+
+        return items;
     } catch (err) {
       Logger.write(
         `${CONST.LOG_SOURCE} (_getAllRequisitions) - ${JSON.stringify(err)}`,
