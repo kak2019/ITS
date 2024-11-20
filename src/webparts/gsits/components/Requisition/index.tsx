@@ -183,7 +183,7 @@ const Requisition: React.FC = () => {
     {
       key: "CreateDate",
       name: t("Created Date"),
-      fieldName: "CreateDate",
+      fieldName: "CreatedDate",
       minWidth: 100,
     },
     { key: "RfqNo", name: t("RFQ No."), fieldName: "RfqNo", minWidth: 80 },
