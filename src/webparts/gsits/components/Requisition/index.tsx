@@ -56,38 +56,75 @@ const Requisition: React.FC = () => {
   } else {
     userEmail = ctx.context._pageContext._user.email;
   }
-
-  console.log(userEmail);
-  // const [currentUserIDCode, setCurrentUserIDCode] = useState<string>("");
-  const [isSearchVisible, setIsSearchVisible] = useState(true);
-  const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
-  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
-  const [isFetching, allRequisitions, , getAllRequisitions, ,] =
-      useRequisition();
-  const [currentPage, setCurrentPage] = useState(1);
   const [userDetails, setUserDetails] = useState({
     role: "",
     name: "",
     sectionCode: "",
     handlercode: ""
   });
+  //console.log(userEmail);
+  // const [currentUserIDCode, setCurrentUserIDCode] = useState<string>("");
+  const [isSearchVisible, setIsSearchVisible] = useState(true);
+  const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+  const [sets, setSets] = useState<any>({})
+  const [isFetching, allRequisitions, , getAllRequisitions, ,] =
+      useRequisition();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredItems, setFilteredItems] =
+      useState<IRequisitionGrid[]>(allRequisitions);
 
+  const paginatedItems = filteredItems.slice(
+      (currentPage - 1) * PAGE_SIZE,
+      currentPage * PAGE_SIZE
+  );
+  const status = React.useRef(false)
   // 定义 Selection，用于 DetailsList 的选择
   const [selection] = useState(new Selection({
+    getKey(item, index) {
+      return item.ID
+    },
     canSelectItem: (item: any) => {
       const arr: Item[] = selection.getSelection()
       const length = arr.filter((val:any) => val.RequisitionType !== item.RequisitionType).length
       return length === 0
     },
     onSelectionChanged: () => {
-      setSelectedItems(selection.getSelection() as Item[]);
+      if(status.current) return
+      const allItems = selection.getItems()
+      const selets = selection.getSelection()
+      allItems.forEach(val => {
+        if(selets.includes(val)) {
+          sets[val.ID] = true
+        } else {
+          sets[val.ID] = false
+        }
+        setSets({...sets})
+      })
+      // setSelectedItems(selection.getSelection() as Item[]);
     },
   }))
 
+  useEffect(() => {
+    setSelectedItems(
+        (allRequisitions as any).filter((val:any) => {
+          return sets[val.ID]
+        })
+    )
+  }, [sets])
   const handlePageChange = (pageNumber: number): void => {
+    status.current = true
     selection.setAllSelected(false)
+    status.current = false
     setCurrentPage(pageNumber);
   };
+
+  useEffect(() => {
+
+    selectedItems.forEach((val: any) => {
+      selection.setKeySelected(val.ID, true, false)
+    })
+  }, [currentPage])
 
   // 跳转到 Create RFQ 页面，并传递选中的记录
   const handleCreateRFQ = (): void => {
@@ -114,7 +151,7 @@ const Requisition: React.FC = () => {
 
         // 确保解析 response 时不抛出错误
         const result = await response.json();
-console.log(result);
+        console.log(result);
         if (result && result.role && result.name && result.sectionCode && result.handlercode) {
           // 如果所有字段都有值，更新状态
           setUserDetails({
@@ -137,7 +174,7 @@ console.log(result);
         (_) => _
     );
   }, []);
-  console.log(userDetails);
+
   // 根据屏幕宽度调整列数
   useEffect(() => {
     const handleResize = (): void => {
@@ -296,7 +333,7 @@ console.log(result);
 
       return (
           (!requisitionType || item.RequisitionType === requisitionType) &&
-          (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase())) &&
+          (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
           (!parma || item.Parma.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase())) &&
@@ -318,8 +355,7 @@ console.log(result);
       );
     });
   };
-  const [filteredItems, setFilteredItems] =
-      useState<IRequisitionGrid[]>(allRequisitions);
+
   // useEffect(() => {
   //   // 获取当前登录用户信息
   //   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/explicit-function-return-type
@@ -327,8 +363,8 @@ console.log(result);
   //     try {
   //       // const userEmail = userEmail; // Replace with actual email if available
   //       const userIDCode = await getUserIDCode(userEmail);
-  //       // setCurrentUserIDCode(userIDCode);
-  //       //
+  //       setCurrentUserIDCode(userIDCode);
+  //
   //       //const userPicture = await getUserPicture(userIDCode);
   //     } catch (error) {
   //       Logger.write(`Failed to fetch user info: ${error}`, LogLevel.Error);
@@ -336,12 +372,7 @@ console.log(result);
   //   };
   //   fetchUserInfo().catch((e) => console.log(e));
   // }, []);
-
-  useEffect(() => {
-    getAllRequisitions();
-  }, []);
-
-// 更新 userDetails 后初始化 filters
+  // 更新 userDetails 后初始化 filters
   useEffect(() => {
     if (userDetails.role === "Manager") {
       setFilters((prev) => ({
@@ -356,14 +387,15 @@ console.log(result);
     }
   }, [userDetails]);
   useEffect(() => {
+    getAllRequisitions();
+  }, []);
+
+
+  useEffect(() => {
     const result = applyFilters()
     setFilteredItems(result)
   }, [allRequisitions])
   console.log(allRequisitions);
-  const paginatedItems = filteredItems.slice(
-      (currentPage - 1) * PAGE_SIZE,
-      currentPage * PAGE_SIZE
-  );
   return (
       <Stack className="Requisition" tokens={{ childrenGap: 20, padding: 20 }}>
         <h2 className="mainTitle">{t("Requisition for New Part Price")}</h2>
@@ -393,7 +425,7 @@ console.log(result);
         </Stack>
 
         {/* 搜索区域 */}
-        {isSearchVisible  && userDetails && (
+        {isSearchVisible  && (
             <Stack tokens={{ padding: 10 }} className="noMargin">
               <Stack
                   tokens={{ childrenGap: 10, padding: 20 }}
