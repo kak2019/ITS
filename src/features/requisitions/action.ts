@@ -39,6 +39,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
             "RequiredWeek",
             "CreatedDate",
             "RequisitionBuyer",
+            "Handler",
             "HandlerName",
             "BuyerFullInfo"
           )
@@ -68,6 +69,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
               AnnualQty: item.AnnualQty,
               OrderQty: item.OrderQty,
               ReqBuyer: item.RequisitionBuyer,
+              Handler: item.Handler,
               HandlerName: item.HandlerName,
               BuyerFullInfo: item.BuyerFullInfo,
             } as IRequisitionGrid;
@@ -120,6 +122,7 @@ export const updateRequisitionAction = createAsyncThunk(
               ? null
               : dateToString(Requisition.CreateDate!),
           RequisitionBuyer: Requisition.ReqBuyer,
+          Handler: Requisition.Handler,
           HandlerName: Requisition.HandlerName,
           BuyerFullInfo: Requisition.BuyerFullInfo,
         });

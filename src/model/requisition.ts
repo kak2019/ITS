@@ -17,6 +17,7 @@ export interface IRequisitionGrid {
   AnnualQty: number;
   OrderQty: number;
   ReqBuyer: string;
+  Handler: string;
   HandlerName: string;
   BuyerFullInfo: string;
 }
