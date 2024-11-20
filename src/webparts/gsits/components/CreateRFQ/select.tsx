@@ -62,8 +62,10 @@ const classes = mergeStyleSets({
     fontWeight: 'bold'
   }
 });
-
-const SupplierSelection: React.FC = () => {
+interface SupplierSelectionProps {
+  onContactsChange?: (contacts: { name: string; email: string; title?: string; functions?: string }[]) => void;
+}
+const SupplierSelection: React.FC<SupplierSelectionProps> = ({onContactsChange}) => {
   const [contacts, setContacts] = useState<(null | { name: string; email: string;title?:string;functions?:string })[]>(Array(5).fill(null));
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSuppliers, setSelectedSuppliers] = useState<Set<string>>(new Set());
@@ -164,6 +166,10 @@ const SupplierSelection: React.FC = () => {
       });
       return newContacts;
     });
+    // 通知父组件更新联系人
+    if (onContactsChange) {
+      onContactsChange(selectedContacts);
+    }
     setIsOpen(false);
   };
 

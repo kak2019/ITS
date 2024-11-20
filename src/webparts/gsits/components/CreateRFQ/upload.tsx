@@ -7,8 +7,8 @@ interface FileUploadComponentProps {
   initalNum?: number;
   uploadTitle?: string;
   subtitle?: string;
+  onFileSelect?: (files: File[]) => void; // 添加回调函数
 }
-
 const useStyles = mergeStyleSets({
   uploadArea: {
     border: '1px dashed #0078d4',
@@ -57,7 +57,7 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   title,
   initalNum = 0, // 初始文件数量为0
   uploadTitle,
-  subtitle,
+  subtitle, onFileSelect,
 }) => {
   // 初始化为一个空数组，不包含任何文件
   const [files, setFiles] = React.useState<File[]>([]);
@@ -65,11 +65,22 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const newFiles = Array.from(event.target.files || []);
+    const updatedFiles = [...files, ...newFiles];
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    // 调用回调函数，将文件传递给父组件
+    if (onFileSelect) {
+      onFileSelect(updatedFiles);
+    }
   };
+
 
   const removeFile = (index: number): void => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    const updatedFiles = files.filter((_, i) => i !== index);
+    // 调用回调函数，将更新后的文件列表传递给父组件
+    if (onFileSelect) {
+      onFileSelect(updatedFiles);
+    }
   };
 
   return (

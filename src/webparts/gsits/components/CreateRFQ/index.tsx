@@ -18,7 +18,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { getAADClient } from '../../../../pnpjsConfig';
 import { AadHttpClient } from '@microsoft/sp-http';
 import { CONST } from '../../../../config/const';
-
+import { useRFQ } from '../../../../hooks/useRFQ';
+import { useDocument } from '../../../../hooks';
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const fetchData = async (parmaValue: string): Promise<any | null> => {
     try {
@@ -59,6 +60,24 @@ const Requisition: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const state = location.state;
+    const [
+       ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        createRFQ
+    ] = useRFQ();
+    const [
+        ,
+        ,
+        ,
+        ,
+        ,
+        ,
+        initialUploadRFQAttachments
+    ] = useDocument();
 // 新状态定义
     const [parmaDetails, setParmaDetails] = useState<{ name: string; country: string }>({ name: '', country: '' });
 
@@ -126,7 +145,7 @@ const Requisition: React.FC = () => {
     // Handlers to close dialogs
     const closeRFQDialog = () => setIsRFQDialogVisible(false);
     const closeLeavePageDialog = () => setIsLeavePageDialogVisible(false);
-
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const formatDate = (date: Date) => {
         const year = date.getFullYear();
@@ -170,6 +189,34 @@ const Requisition: React.FC = () => {
         { key: 'HandlerName', name: t('Handler Name'), fieldName: 'HandlerName', minWidth: 100 },
         { key: 'Status', name: t('Status'), fieldName: 'Status', minWidth: 80 },
     ];
+    const [selectedContacts, setSelectedContacts] = useState<
+        { name: string; email: string; title?: string; functions?: string }[]
+    >([]);
+    const handleSubmit = async () => {
+        try {
+            // 假设你需要从 selectedItems 中构造 IRFQGrid 格式的数据
+            const rfqData ={
+                RFQDueDate:selectedDate || new Date(),
+                Status: "New", // 示例字段
+                SupplierContact:JSON.stringify(selectedContacts),
+                Comment:"test",
+                OrderType:selectedValue,
+                Parma:form.parma
+            };
+            createRFQ(rfqData);
+            // 上传文件
+            console.log('Fetched data on blur:', selectedFiles);
+            if (selectedFiles.length > 0) { // 假设 selectedFiles 是存储文件的状态
+                initialUploadRFQAttachments(selectedFiles, "33");
+                console.log('Files uploaded successfully');
+            }
+
+            alert('RFQ submitted successfully!');
+        } catch (error) {
+            console.error('Error submitting RFQ:', error);
+            alert('Failed to submit RFQ.');
+        }
+    };
     console.log(selectedDate,formattedDate);
     return (
         <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
@@ -215,11 +262,12 @@ const Requisition: React.FC = () => {
                         <Dropdown label="Order Type" placeholder="Please Select"  options={state.selectedItems[0].RequisitionType==="PP" ? [{key: 'SAPP Standalone Prototype Order', text: 'SAPP Standalone Prototype Order'}] : dropdownOptions } style={{ width: Number(itemWidth) - 30 }} />
                     </Stack.Item>
                     <Stack.Item grow styles={{ root: { flexBasis: '100%', maxWidth: '100%' } }}>
-                        <FileUploader title={t('Add RFQ Attachments')} initalNum={4} />
+                        <FileUploader title={t('Add RFQ Attachments')} initalNum={4}
+                                      onFileSelect={(files) => setSelectedFiles(files)} />
                     </Stack.Item>
                 </Stack>
                 <Stack styles={{ root: { width: '50%' } }}>
-                    <SupplierSelection />
+                    <SupplierSelection onContactsChange={(contacts) => setSelectedContacts(contacts)} />
                 </Stack>
             </Stack>
             <h3 className="mainTitle noMargin">{t('Selected Parts')}</h3>
@@ -253,7 +301,7 @@ const Requisition: React.FC = () => {
                 }}
             >
                 <DialogFooter>
-                    <PrimaryButton onClick={closeRFQDialog} text="Yes" />
+                    <PrimaryButton onClick={handleSubmit} text="Yes" />
                     <DefaultButton onClick={closeRFQDialog} text="No" />
                 </DialogFooter>
             </Dialog>
