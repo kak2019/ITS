@@ -21,4 +21,5 @@ export interface IRequisitionGrid {
   HandlerName: string;
   BuyerFullInfo: string;
   SectionDescription: string;
+  Porg:string;
 }

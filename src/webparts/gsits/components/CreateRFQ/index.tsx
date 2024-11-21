@@ -26,8 +26,8 @@ import { AadHttpClient } from "@microsoft/sp-http";
 import { CONST } from "../../../../config/const";
 import { useRFQ } from "../../../../hooks/useRFQ";
 import { useDocument } from "../../../../hooks";
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const fetchData = async (parmaValue: string): Promise<any | null> => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fetchData = async (parmaValue: string): Promise<any> => {
   try {
     const client = getAADClient();
     const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetSupplierInfo/${parmaValue}`;
@@ -147,12 +147,13 @@ const Requisition: React.FC = () => {
     useState(false);
 
   // Handlers to open dialogs
-  const openRFQDialog = () => setIsRFQDialogVisible(true);
-  const openLeavePageDialog = () => setIsLeavePageDialogVisible(true);
+
+  const openRFQDialog = () :void=> setIsRFQDialogVisible(true);
+  const openLeavePageDialog = ():void => setIsLeavePageDialogVisible(true);
 
   // Handlers to close dialogs
-  const closeRFQDialog = () => setIsRFQDialogVisible(false);
-  const closeLeavePageDialog = () => setIsLeavePageDialogVisible(false);
+  const closeRFQDialog = ():void => setIsRFQDialogVisible(false);
+  const closeLeavePageDialog = ():void => setIsLeavePageDialogVisible(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const formatDate = (date: Date) => {
@@ -260,7 +261,7 @@ const Requisition: React.FC = () => {
   const [selectedContacts, setSelectedContacts] = useState<
     { name: string; email: string; title?: string; functions?: string }[]
   >([]);
-  const handleSubmit = async () => {
+  const handleSubmit = async () :Promise<void>=> {
     try {
       // 假设你需要从 selectedItems 中构造 IRFQGrid 格式的数据
       const rfqData = {

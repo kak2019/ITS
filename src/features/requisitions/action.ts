@@ -42,7 +42,8 @@ export const getAllRequisitionsAction = createAsyncThunk(
             "Handler",
             "HandlerName",
             "BuyerFullInfo",
-            "SectionDescription"
+            "SectionDescription",
+             "Porg",
           )
           .top(5000)
           .skip(pageIndex * 5000)();
@@ -74,6 +75,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
               HandlerName: item.HandlerName,
               BuyerFullInfo: item.BuyerFullInfo,
               SectionDescription: item.SectionDescription,
+              Porg : item.Porg
             } as IRequisitionGrid;
           })
         );
