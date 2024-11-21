@@ -34,7 +34,7 @@ const UDUser: React.FC = () => {
   ];
   //#endregion
   //#region properties
-  const [, allRFQs, , getAllRFQs, , , ,] = useRFQ();
+  const [, allRFQs, , , getAllRFQs, , , ,] = useRFQ();
   const columns = [
     {
       key: "supplierid",

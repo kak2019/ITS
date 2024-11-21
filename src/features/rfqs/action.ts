@@ -284,31 +284,34 @@ export const updateRFQAction = createAsyncThunk(
 );
 export const createRFQAction = createAsyncThunk(
   `${FeatureKey.RFQS}/createRFQ`,
-  async (rfq: IRFQGrid): Promise<void> => {
+  async (rfq: IRFQGrid): Promise<string> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));
     try {
-      await spCache.web.lists.getByTitle(CONST.LIST_NAME_RFQ).items.add({
-        ID: rfq.ID,
-        Title: rfq.Title,
-        Parma: rfq.Parma,
-        SupplierContact: rfq.SupplierContact,
-        RFQDueDate: rfq.RFQDueDate,
-        OrderType: rfq.OrderType,
-        RFQInstructionToSupplier: rfq.RFQInstructionToSupplier,
-        RFQStatus: rfq.RFQStatus,
-        BuyerInfo: rfq.BuyerInfo,
-        SectionInfo: rfq.SectionInfo,
-        Comment: rfq.Comment,
-        CommentHistory: rfq.CommentHistory,
-        RequisitionIds: rfq.RequisitionIds,
-        QuoteReceivedDate: rfq.QuoteReceivedDate,
-        ReasonofRFQ: rfq.ReasonOfRFQ,
-        EffectiveDateRequest: rfq.EffectiveDateRequest,
-        HandlerName: rfq.HandlerName,
-        RFQNo_x002e_: rfq.RFQNo,
-        RFQType: rfq.RFQType,
-      });
+      const addItemResult = await spCache.web.lists
+        .getByTitle(CONST.LIST_NAME_RFQ)
+        .items.add({
+          ID: rfq.ID,
+          Title: rfq.Title,
+          Parma: rfq.Parma,
+          SupplierContact: rfq.SupplierContact,
+          RFQDueDate: rfq.RFQDueDate,
+          OrderType: rfq.OrderType,
+          RFQInstructionToSupplier: rfq.RFQInstructionToSupplier,
+          RFQStatus: rfq.RFQStatus,
+          BuyerInfo: rfq.BuyerInfo,
+          SectionInfo: rfq.SectionInfo,
+          Comment: rfq.Comment,
+          CommentHistory: rfq.CommentHistory,
+          RequisitionIds: rfq.RequisitionIds,
+          QuoteReceivedDate: rfq.QuoteReceivedDate,
+          ReasonofRFQ: rfq.ReasonOfRFQ,
+          EffectiveDateRequest: rfq.EffectiveDateRequest,
+          HandlerName: rfq.HandlerName,
+          RFQNo_x002e_: rfq.RFQNo,
+          RFQType: rfq.RFQType,
+        });
+      return addItemResult.data.ID;
     } catch (err) {
       Logger.write(
         `${CONST.LOG_SOURCE} (_createRFQ) - ${JSON.stringify(err)}`,
