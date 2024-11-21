@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   getDocumentsAction,
+  getRFQAttachmentsAction,
   initialUploadRFQAttachmentsAction,
   isFetchingSelector,
   itemsSelector,
@@ -18,7 +19,8 @@ type DocumentOperators = [
   readAllFilesSize: () => void,
   updateTitles: (ids: number[]) => void,
   getDocuments: () => void,
-  initialUploadRFQAttachments: (files: File[], rfqId: string) => void
+  initialUploadRFQAttachments: (files: File[], rfqId: string) => void,
+  getRFQAttachments: (rfqId: string) => void
 ];
 
 export const useDocument = (): Readonly<DocumentOperators> => {
@@ -35,13 +37,18 @@ export const useDocument = (): Readonly<DocumentOperators> => {
     },
     [dispatch]
   );
-
   const getDocuments = useCallback(() => {
     return dispatch(getDocumentsAction(items));
   }, [dispatch]);
   const initialUploadRFQAttachments = useCallback(
     (files: File[], rfqId: string) => {
       return dispatch(initialUploadRFQAttachmentsAction({ files, rfqId }));
+    },
+    [dispatch]
+  );
+  const getRFQAttachments = useCallback(
+    (rfqId: string) => {
+      return dispatch(getRFQAttachmentsAction(rfqId));
     },
     [dispatch]
   );
@@ -53,5 +60,6 @@ export const useDocument = (): Readonly<DocumentOperators> => {
     updateTitles,
     getDocuments,
     initialUploadRFQAttachments,
+    getRFQAttachments,
   ] as const;
 };

@@ -6,6 +6,7 @@ import {
   updateTitlesAction,
   getDocumentsAction,
   initialUploadRFQAttachmentsAction,
+  getRFQAttachmentsAction,
 } from "./action";
 import { DocumentsStatus, IFile } from "../../model/documents";
 
@@ -64,6 +65,17 @@ const documentsSlice = createSlice({
         state.status = DocumentsStatus.Idle;
       })
       .addCase(initialUploadRFQAttachmentsAction.rejected, (state, action) => {
+        state.status = DocumentsStatus.Failed;
+        state.message = action.error?.message || "";
+      })
+      .addCase(getRFQAttachmentsAction.pending, (state, action) => {
+        state.status = DocumentsStatus.Loading;
+      })
+      .addCase(getRFQAttachmentsAction.fulfilled, (state, action) => {
+        state.status = DocumentsStatus.Idle;
+        state.rfqAttachments = [...action.payload] as File[];
+      })
+      .addCase(getRFQAttachmentsAction.rejected, (state, action) => {
         state.status = DocumentsStatus.Failed;
         state.message = action.error?.message || "";
       });

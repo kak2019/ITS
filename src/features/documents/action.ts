@@ -172,3 +172,32 @@ export const initialUploadRFQAttachmentsAction = createAsyncThunk(
     }
   }
 );
+export const getRFQAttachmentsAction = createAsyncThunk(
+  `${FeatureKey.RFQS}/uploadFile`,
+  async (rfqId: string): Promise<File[]> => {
+    const sp = spfi(getSP());
+    const spCache = sp.using(Caching({ store: "session" }));
+    try {
+      const filesInfo = await spCache.web
+        .getFolderByServerRelativePath(
+          `${CONST.LIBRARY_RFQATTACHMENTS_NAME}/${rfqId}`
+        )
+        .files();
+      const files = await Promise.all(
+        filesInfo.map(async (fileInfo) => {
+          const file = await spCache.web
+            .getFileByServerRelativePath(fileInfo.ServerRelativeUrl)
+            .getBlob();
+          return new File([file], fileInfo.Name, { type: file.type });
+        })
+      );
+      return files;
+    } catch (err) {
+      Logger.write(
+        `${CONST.LOG_SOURCE} (_getRFQAttachments) - ${JSON.stringify(err)}`,
+        LogLevel.Error
+      );
+      return Promise.reject(MESSAGE.retrieveDataFailed);
+    }
+  }
+);

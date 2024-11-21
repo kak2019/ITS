@@ -73,7 +73,7 @@ const Requisition: React.FC = () => {
   const location = useLocation();
   const state = location.state;
   const [, , , , , , createRFQ] = useRFQ();
-  const [, , , , , , initialUploadRFQAttachments] = useDocument();
+  const [, , , , , , initialUploadRFQAttachments, ,] = useDocument();
   // 新状态定义
   const [parmaDetails, setParmaDetails] = useState<{
     name: string;
