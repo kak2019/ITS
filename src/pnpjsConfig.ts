@@ -23,7 +23,8 @@ export const getSP = (context?: WebPartContext): SPFI => {
 
 export const getGraph = (context?: WebPartContext): GraphFI => {
     if (_graph === undefined || _graph === null) {
-        _graph = graphfi().using(graphSPFx(context as ISPFXContext)).using(Telemetry()).using(PnPLogging(LogLevel.Warning));
+        _graph = graphfi("https://graph.microsoft.com/beta").using(graphSPFx(context as ISPFXContext)).using(Telemetry()).using(PnPLogging(LogLevel.Warning));
+        
     }
     return _graph;
 }
