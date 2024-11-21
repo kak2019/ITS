@@ -67,6 +67,7 @@ const Requisition: React.FC = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(true);
   const [columnsPerRow, setColumnsPerRow] = useState<number>(5);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sets, setSets] = useState<any>({})
   const [isFetching, allRequisitions, , getAllRequisitions, ,] =
       useRequisition();
@@ -84,8 +85,10 @@ const Requisition: React.FC = () => {
     getKey(item, index) {
       return item.ID
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canSelectItem: (item: any) => {
       const arr: Item[] = selection.getSelection()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const length = arr.filter((val:any) => val.RequisitionType !== item.RequisitionType).length
       return length === 0
     },
@@ -107,6 +110,7 @@ const Requisition: React.FC = () => {
 
   useEffect(() => {
     setSelectedItems(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (allRequisitions as any).filter((val:any) => {
           return sets[val.ID]
         })
@@ -120,7 +124,7 @@ const Requisition: React.FC = () => {
   };
 
   useEffect(() => {
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     selectedItems.forEach((val: any) => {
       selection.setKeySelected(val.ID, true, false)
     })
@@ -218,6 +222,12 @@ const Requisition: React.FC = () => {
       minWidth: 100,
     },
     {
+      key: "Parma",
+      name: t("Parma"),
+      fieldName: "Parma",
+      minWidth: 100,
+    },
+    {
       key: "RequisitionType",
       name: t("Req. Type"),
       fieldName: "RequisitionType",
@@ -237,7 +247,7 @@ const Requisition: React.FC = () => {
     },
     {
       key: "RequiredWeek",
-      name: t("Req Week From"),
+      name: t("Req Week"),
       fieldName: "RequiredWeek",
       minWidth: 100,
     },
@@ -336,7 +346,7 @@ const Requisition: React.FC = () => {
           (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
-          (!status || item.Status === status) &&
+          (!status || status.includes(item.Status)) &&
           (!partNumber ||
               item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
           (!qualifier || item.Qualifier === qualifier) &&
@@ -445,6 +455,7 @@ const Requisition: React.FC = () => {
                     <Dropdown
                         label={t("Requisition Type")}
                         placeholder="Please Select"
+                        multiSelect={true}
                         options={RequisitionsType}
                         style={{ width: Number(itemWidth) - 30 }}
                         onChange={(e, option) =>
@@ -770,6 +781,8 @@ const Requisition: React.FC = () => {
                               width: width,
                               height: "30px",
                               backgroundColor: "#BDBDBD",
+                              justifyContent: "flex-end", // 让内容靠右对齐
+                              alignItems: "right",      // 垂直居中对齐
                             }}
                         >
                           <Pagination
