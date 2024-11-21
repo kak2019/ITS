@@ -195,7 +195,7 @@ const RFQ: React.FC = () => {
 
 
 
-    const applyFilters = () => {
+    const applyFilters = () :void=> {
 
         setAppliedFilters({
             ...searchConditions,

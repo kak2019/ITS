@@ -54,11 +54,11 @@ const useStyles = mergeStyleSets({
 });
 
 const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
-  title,
-  initalNum = 0, // 初始文件数量为0
-  uploadTitle,
-  subtitle, onFileSelect,
-}) => {
+                                                                   title,
+                                                                   initalNum = 0, // 初始文件数量为0
+                                                                   uploadTitle,
+                                                                   subtitle, onFileSelect,
+                                                                 }) => {
   // 初始化为一个空数组，不包含任何文件
   const [files, setFiles] = React.useState<File[]>([]);
   const classes = useStyles;
@@ -84,45 +84,45 @@ const FileUploadComponent: React.FC<FileUploadComponentProps> = ({
   };
 
   return (
-    <div>
-      <span className={classes.title}>{title}</span>
-      <div className={classes.uploadArea}>
-        <input
-          type="file"
-          multiple
-          style={{ display: 'none' }}
-          id="file-input"
-          onChange={handleFileUpload}
-        />
-        
-        <IconButton iconProps={{ iconName: 'AttachIcon' }} style={{ width: '20px', height: '20px' }} />
-        <label htmlFor="file-input" style={{ fontSize: '12px' }}>
+      <div>
+        <span className={classes.title}>{title}</span>
+        <div className={classes.uploadArea}>
+          <input
+              type="file"
+              multiple
+              style={{ display: 'none' }}
+              id="file-input"
+              onChange={handleFileUpload}
+          />
+
+          <IconButton iconProps={{ iconName: 'AttachIcon' }} style={{ width: '20px', height: '20px' }} />
+          <label htmlFor="file-input" style={{ fontSize: '12px' }}>
           <span role="img" aria-label="paperclip" style={{ fontWeight: 'bold', fontSize: '16px' ,marginRight:10}}>
             {uploadTitle ?? 'Click to Upload'}
           </span>
-          {/* <br /> */}
-          ({subtitle ?? 'File number limit: 10; Single file size limit: 10MB'})
-        </label>
-      </div>
-
-      <Stack className={classes.fileList}>
-        <div className={classes.placeholder}>
-          <div className={classes.fileItem + ' ' + classes.oddItem}/>
-          <div className={classes.fileItem + ' ' + classes.evenItem}/>
-          <div className={classes.fileItem + ' ' + classes.oddItem}/>
-          <div className={classes.fileItem + ' ' + classes.evenItem}/>
+            {/* <br /> */}
+            ({subtitle ?? 'File number limit: 10; Single file size limit: 10MB'})
+          </label>
         </div>
-        {files.map((file, index) => (
-          <div key={index} className={`${classes.fileItem} ${classes.front} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
-            {file.name}
-            <IconButton
-              iconProps={{ iconName: 'Delete' }}
-              onClick={() => removeFile(index)}
-            />
+
+        <Stack className={classes.fileList}>
+          <div className={classes.placeholder}>
+            <div className={classes.fileItem + ' ' + classes.oddItem}/>
+            <div className={classes.fileItem + ' ' + classes.evenItem}/>
+            <div className={classes.fileItem + ' ' + classes.oddItem}/>
+            <div className={classes.fileItem + ' ' + classes.evenItem}/>
           </div>
-        ))}
-      </Stack>
-    </div>
+          {files.map((file, index) => (
+              <div key={index} className={`${classes.fileItem} ${classes.front} ${index % 2 === 0 ? classes.evenItem : classes.oddItem}`}>
+                {file.name}
+                <IconButton
+                    iconProps={{ iconName: 'Delete' }}
+                    onClick={() => removeFile(index)}
+                />
+              </div>
+          ))}
+        </Stack>
+      </div>
   );
 };
 

@@ -12,6 +12,9 @@ import {
   DatePicker,
   Selection,
   TooltipHost,
+  Dialog,
+  DialogFooter,
+  DialogType
 } from "@fluentui/react";
 import { useNavigate } from "react-router-dom";
 import { IColumn } from "@fluentui/react";
@@ -82,15 +85,16 @@ const Requisition: React.FC = () => {
   const status = React.useRef(false)
   // 定义 Selection，用于 DetailsList 的选择
   const [selection] = useState(new Selection({
-    getKey(item, index) {
+    getKey(item: any, index) {
       return item.ID
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canSelectItem: (item: any) => {
-      const arr: Item[] = selection.getSelection()
+
+      // const arr: Item[] = selection.getSelection()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const length = arr.filter((val:any) => val.RequisitionType !== item.RequisitionType).length
-      return length === 0
+      // 如果 Parma 有值，返回 false，否则返回 true
+      return !item.Parma && item.handler === userDetails.handlercode;
     },
     onSelectionChanged: () => {
       if(status.current) return
@@ -291,11 +295,11 @@ const Requisition: React.FC = () => {
   ];
 
   const [filters, setFilters] = useState<{
-    requisitionType: string;
+    requisitionType: any[];
     buyer: string;
     parma: string;
     section: string;
-    status: string;
+    status: any[];
     partNumber: string;
     qualifier: string;
     project: string;
@@ -306,11 +310,11 @@ const Requisition: React.FC = () => {
     createdDateFrom: Date | null;
     createdDateTo: Date | null;
   }>({
-    requisitionType: "",
+    requisitionType: [],
     buyer: "",
     parma: "",
     section: "",
-    status: "",
+    status: [],
     partNumber: "",
     qualifier: "",
     project: "",
@@ -340,13 +344,14 @@ const Requisition: React.FC = () => {
         createdDateFrom,
         createdDateTo,
       } = filters;
+
       return (
-          (!requisitionType || item.RequisitionType === requisitionType) &&
+          (requisitionType.length === 0 || requisitionType.includes(item.RequisitionType)) &&
           (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
           (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
-          (!status || status.includes(item.Status)) &&
+          (status.length===0 || status.includes(item.Status)) &&
           (!partNumber ||
               item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
           (!qualifier || item.Qualifier === qualifier) &&
@@ -362,9 +367,25 @@ const Requisition: React.FC = () => {
           (!createdDateTo ||
               (item.CreateDate && new Date(item.CreateDate) <= createdDateTo))
       );
+    }).sort((a:any, b:any) => {
+      return b.RequiredWeek - a.RequiredWeek
     });
   };
 
+
+  const [isDialogVisible, setIsDialogVisible] = React.useState(false);
+  const [message, setMessage] = React.useState<string>("");
+
+  // 弹出对话框时触发的函数
+  const showDialog = (msg: string) => {
+    setMessage(msg);
+    setIsDialogVisible(true);
+  };
+
+  // 关闭对话框
+  const closeDialog = () => {
+    setIsDialogVisible(false);
+  };
   // useEffect(() => {
   //   // 获取当前登录用户信息
   //   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/explicit-function-return-type
@@ -458,11 +479,18 @@ const Requisition: React.FC = () => {
                         multiSelect={true}
                         options={RequisitionsType}
                         style={{ width: Number(itemWidth) - 30 }}
-                        onChange={(e, option) =>
-                            setFilters((prev) => ({
+                        onChange={(e, option) =>{
+                          if (option) {
+                            const newSelectedKeys = option.selected
+                                ? [...filters.requisitionType, option.key as string] // 添加选中项
+                                : filters.requisitionType.filter((key) => key !== option.key); // 移除未选中项
+
+                            return setFilters((prev: any) => ({
                               ...prev,
-                              requisitionType: String(option?.key || ""),
+                              requisitionType: newSelectedKeys,
                             }))
+                          }
+                        }
                         }
                     />
                   </Stack.Item>
@@ -535,8 +563,41 @@ const Requisition: React.FC = () => {
                       grow
                       styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}
                   >
+                    <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "4px",
+                          marginTop: "4px",
+                        }}
+                    >
+                  <span
+                      style={{
+                        marginRight: "8px",
+                        fontSize: "14px",
+                        fontWeight: "500",
+                      }}
+                  >
+                    {t("Section")}
+                  </span>
+                      <TooltipHost
+                          content={'Search by Section code/Section Description'}
+                          calloutProps={{ gapSpace: 0 }}
+                      >
+                        <Icon
+                            iconName="Info"
+                            styles={{
+                              root: {
+                                fontSize: "16px", // 增大字体大小
+                                cursor: "pointer",
+                                color: "#0078D4", // 使用更显眼的颜色（蓝色）
+                              },
+                            }}
+                        />
+                      </TooltipHost>
+                    </div>
                     <TextField
-                        label={t("Section")}
+                        // label={t("Section")}
                         placeholder="Placeholder text"
                         value={filters.section}
                         style={{ width: Number(itemWidth) - 30 }}
@@ -555,11 +616,19 @@ const Requisition: React.FC = () => {
                         multiSelect
                         options={StatesType}
                         style={{ width: Number(itemWidth) - 30 }}
-                        onChange={(e, option) =>
-                            setFilters((prev) => ({
+                        onChange={(e, option) => {
+                          if (option) {
+                            const newSelectedKeys = option.selected
+                                ? [...filters.status, option.key as string] // 添加选中项
+                                : filters.status.filter((key) => key !== option.key); // 移除未选中项
+
+                            return setFilters((prev) => ({
                               ...prev,
-                              status: String(option?.key || ""),
+                              status: newSelectedKeys,
                             }))
+                          }
+                        }
+
                         }
                     />
                   </Stack.Item>
@@ -772,33 +841,36 @@ const Requisition: React.FC = () => {
                     height: 0,
                     width: 0,
                   }}
-                  onRenderDetailsFooter={() => {
-                    const el = document.getElementsByClassName("ms-DetailsHeader")[0];
-                    const width = (el && el.clientWidth) || "100%";
-                    return (
-                        <div
-                            style={{
-                              width: width,
-                              height: "30px",
-                              backgroundColor: "#BDBDBD",
-                              justifyContent: "flex-end", // 让内容靠右对齐
-                              alignItems: "right",      // 垂直居中对齐
-                            }}
-                        >
-                          <Pagination
-                              totalItems={filteredItems.length}
-                              pageSize={PAGE_SIZE}
-                              currentPage={currentPage}
-                              onPageChange={handlePageChange}
-                          />
-                        </div>
-                    );
-                  }}
+                  // onRenderDetailsFooter={() => {
+                  //   const el = document.getElementsByClassName("ms-DetailsHeader")[0];
+                  //   const width = (el && el.clientWidth) || "100%";
+                  //   return (
+
+                  //   );
+                  // }}
                   selectionPreservedOnEmptyClick={true}
                   ariaLabelForSelectionColumn="Toggle selection"
                   ariaLabelForSelectAllCheckbox="Toggle selection for all items"
                   checkButtonAriaLabel="select row"
               />
+              <div
+                  style={{
+                    width: '100%',
+                    height: "50px",
+                    backgroundColor: "#BDBDBD",
+                    display: 'flex',
+                    paddingRight: '10px',
+                    justifyContent: "flex-end", // 让内容靠右对齐
+                    alignItems: "center",      // 垂直居中对齐
+                  }}
+              >
+                <Pagination
+                    totalItems={filteredItems.length}
+                    pageSize={PAGE_SIZE}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChange}
+                />
+              </div>
             </>
         )}
 
@@ -814,10 +886,30 @@ const Requisition: React.FC = () => {
                   color: "black",
                 },
               }}
-              onClick={handleCreateRFQ}
+              onClick={() => {
+                const res = getDifferentTypes(selectedItems)
+                if(res.length>1) {
+                  showDialog(res.join('、') + ` type cannot be selected together, please select again`)
+                  return
+                }
+                handleCreateRFQ()
+              }}
               disabled={selectedItems.length === 0}
           />
         </Stack>
+        <Dialog
+            hidden={!isDialogVisible} // 控制对话框是否显示
+            onDismiss={closeDialog}
+            dialogContentProps={{
+              type: DialogType.normal,
+              title: "提示",
+              subText: message, // 动态设置消息内容
+            }}
+        >
+          <DialogFooter>
+            <PrimaryButton onClick={closeDialog} text="OK" />
+          </DialogFooter>
+        </Dialog>
       </Stack>
   );
 };
@@ -896,4 +988,17 @@ function addWeeksToYYYYWW(dateStr: any, weeksToAdd: any) {
 
   // 返回计算结果
   return `${targetYear}${String(targetWeek).padStart(2, "0")}`;
+}
+
+
+function getDifferentTypes(arr: any) {
+  // 使用 Set 获取所有唯一的 type
+  const types = new Set(arr.map((item:any) => item.RequisitionType));
+
+  // 如果 Set 的 size 大于 1，说明有不同的类型
+  if (types.size > 1) {
+    return Array.from(types);  // 返回所有不同的 type
+  }
+
+  return [];  // 如果只有一种 type，返回空数组
 }

@@ -26,14 +26,15 @@ import { AadHttpClient } from "@microsoft/sp-http";
 import { CONST } from "../../../../config/const";
 import { useRFQ } from "../../../../hooks/useRFQ";
 import { useDocument } from "../../../../hooks";
+import { useRequisition } from "../../../../hooks/useRequisition";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchData = async (parmaValue: string): Promise<any> => {
   try {
     const client = getAADClient();
     const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetSupplierInfo/${parmaValue}`;
     const response = await client.get(
-      functionUrl,
-      AadHttpClient.configurations.v1
+        functionUrl,
+        AadHttpClient.configurations.v1
     );
 
     // 检查响应状态
@@ -57,8 +58,8 @@ const fetchDatadropdown = async (input: string): Promise<[]> => {
     const client = getAADClient();
     const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetParma?q=${input}`;
     const response = await client.get(
-      functionUrl,
-      AadHttpClient.configurations.v1
+        functionUrl,
+        AadHttpClient.configurations.v1
     );
     return await response.json(); // 返回 JSON 数据
   } catch (error) {
@@ -124,10 +125,10 @@ const Requisition: React.FC = () => {
         console.log(response, "eeee");
         if (response && Array.isArray(response)) {
           setFilteredOptions(
-            response.map((item: string) => ({
-              key: item, // 字符串本身作为选项的 key
-              text: item, // 字符串本身作为选项的 text
-            }))
+              response.map((item: string) => ({
+                key: item, // 字符串本身作为选项的 key
+                text: item, // 字符串本身作为选项的 text
+              }))
           );
         }
       } catch (error) {
@@ -144,7 +145,8 @@ const Requisition: React.FC = () => {
 
   const [isRFQDialogVisible, setIsRFQDialogVisible] = useState(false);
   const [isLeavePageDialogVisible, setIsLeavePageDialogVisible] =
-    useState(false);
+      useState(false);
+  const [,,,, updateRequisition] = useRequisition()
 
   // Handlers to open dialogs
 
@@ -176,8 +178,8 @@ const Requisition: React.FC = () => {
     }
   };
   const handleChange = (
-    event: React.FormEvent<IComboBox>,
-    option?: IComboBoxOption
+      event: React.FormEvent<IComboBox>,
+      option?: IComboBoxOption
   ): void => {
     if (option) {
       setSelectedValue(option.key as string);
@@ -185,7 +187,7 @@ const Requisition: React.FC = () => {
     }
   };
   const itemWidth = `calc(${100 / columnsPerRow}% - ${
-    ((columnsPerRow - 1) * 10) / columnsPerRow
+      ((columnsPerRow - 1) * 10) / columnsPerRow
   }px)`;
 
   const columns = [
@@ -259,7 +261,7 @@ const Requisition: React.FC = () => {
     { key: "Status", name: t("Status"), fieldName: "Status", minWidth: 80 },
   ];
   const [selectedContacts, setSelectedContacts] = useState<
-    { name: string; email: string; title?: string; functions?: string }[]
+      { name: string; email: string; title?: string; functions?: string }[]
   >([]);
   const handleSubmit = async () :Promise<void>=> {
     try {
@@ -273,6 +275,13 @@ const Requisition: React.FC = () => {
         Parma: form.parma,
       };
       const newRFQId = await createRFQ(rfqData);
+      state.selectedItems.forEach((item: any) => {
+        updateRequisition({
+          ...item,
+          ID: item.ID,
+          Parma: form.parma
+        })
+      })
       // 上传文件
       console.log("Fetched data on blur:", selectedFiles);
       if (selectedFiles.length > 0) {
@@ -281,7 +290,9 @@ const Requisition: React.FC = () => {
         console.log("Files uploaded successfully");
       }
 
-      alert("RFQ submitted successfully!");
+      // alert("RFQ submitted successfully!");
+      closeRFQDialog()
+      navigate("/requisition")
     } catch (error) {
       console.error("Error submitting RFQ:", error);
       alert("Failed to submit RFQ.");
@@ -289,164 +300,164 @@ const Requisition: React.FC = () => {
   };
   console.log(selectedDate, formattedDate);
   return (
-    <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
-      <h2 className="mainTitle">{t("New Parts RFQ Creation")}</h2>
-      <Stack
-        className="noMargin"
-        horizontal
-        tokens={{ childrenGap: 30, padding: 20 }}
-        styles={{
-          root: {
-            backgroundColor: "#CCEEFF",
-            borderRadius: "4px",
-            marginBottom: "5px",
-            alignItems: "flex-start",
-          },
-        }}
-      >
+      <Stack className="RFQ" tokens={{ childrenGap: 20, padding: 20 }}>
+        <h2 className="mainTitle">{t("New Parts RFQ Creation")}</h2>
         <Stack
-          horizontal
-          wrap
-          tokens={{ childrenGap: 10 }}
-          styles={{ root: { width: "50%" } }}
-        >
-          <Stack.Item
-            grow
-            styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
-          >
-            <ComboBox
-              label={t("Parma")}
-              options={filteredOptions}
-              autoComplete="on"
-              allowFreeform={true}
-              openOnKeyboardFocus={true}
-              onInputValueChange={handleInputChange}
-              onBlur={handleBlur}
-              // text={form.parma}
-              selectedKey={selectedValue}
-              styles={comboBoxStyles}
-              onChange={handleChange}
-            />
-          </Stack.Item>
-          <Stack.Item
-            grow
+            className="noMargin"
+            horizontal
+            tokens={{ childrenGap: 30, padding: 20 }}
             styles={{
-              root: { flexBasis: "40%", width: "50%", alignSelf: "flex-end" },
+              root: {
+                backgroundColor: "#CCEEFF",
+                borderRadius: "4px",
+                marginBottom: "5px",
+                alignItems: "flex-start",
+              },
             }}
+        >
+          <Stack
+              horizontal
+              wrap
+              tokens={{ childrenGap: 10 }}
+              styles={{ root: { width: "50%" } }}
           >
-            {parmaDetails.name}
-          </Stack.Item>
-          <Stack.Item
-            grow
-            styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
-          >
-            <DatePicker
-              label={t("RFQ Due Date")}
-              minDate={today}
-              value={selectedDate} // 显示的日期值
-              onSelectDate={(date) => {
-                if (date) {
-                  setSelectedDate(date); // 设置内部日期状态
-                  const formatted = formatDate(date); // 格式化日期
-                  setFormattedDate(formatted); // 更新格式化后日期状态
-                }
-              }}
+            <Stack.Item
+                grow
+                styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
+            >
+              <ComboBox
+                  label={t("Parma")}
+                  options={filteredOptions}
+                  autoComplete="on"
+                  allowFreeform={true}
+                  openOnKeyboardFocus={true}
+                  onInputValueChange={handleInputChange}
+                  onBlur={handleBlur}
+                  // text={form.parma}
+                  selectedKey={selectedValue}
+                  styles={comboBoxStyles}
+                  onChange={handleChange}
+              />
+            </Stack.Item>
+            <Stack.Item
+                grow
+                styles={{
+                  root: { flexBasis: "40%", width: "50%", alignSelf: "flex-end" },
+                }}
+            >
+              {parmaDetails.name}
+            </Stack.Item>
+            <Stack.Item
+                grow
+                styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
+            >
+              <DatePicker
+                  label={t("RFQ Due Date")}
+                  minDate={today}
+                  value={selectedDate} // 显示的日期值
+                  onSelectDate={(date) => {
+                    if (date) {
+                      setSelectedDate(date); // 设置内部日期状态
+                      const formatted = formatDate(date); // 格式化日期
+                      setFormattedDate(formatted); // 更新格式化后日期状态
+                    }
+                  }}
+              />
+            </Stack.Item>
+            <Stack.Item
+                grow
+                styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
+            >
+              <Dropdown
+                  label="Order Type"
+                  placeholder="Please Select"
+                  options={
+                    state.selectedItems[0].RequisitionType === "PP"
+                        ? [
+                          {
+                            key: "SAPP Standalone Prototype Order",
+                            text: "SAPP Standalone Prototype Order",
+                          },
+                        ]
+                        : dropdownOptions
+                  }
+                  style={{ width: Number(itemWidth) - 30 }}
+              />
+            </Stack.Item>
+            <Stack.Item
+                grow
+                styles={{ root: { flexBasis: "100%", maxWidth: "100%" } }}
+            >
+              <FileUploader
+                  title={t("Add RFQ Attachments")}
+                  initalNum={4}
+                  onFileSelect={(files) => setSelectedFiles(files)}
+              />
+            </Stack.Item>
+          </Stack>
+          <Stack styles={{ root: { width: "50%" } }}>
+            <SupplierSelection
+                onContactsChange={(contacts) => setSelectedContacts(contacts)}
             />
-          </Stack.Item>
-          <Stack.Item
-            grow
-            styles={{ root: { flexBasis: "40%", maxWidth: "50%" } }}
-          >
-            <Dropdown
-              label="Order Type"
-              placeholder="Please Select"
-              options={
-                state.selectedItems[0].RequisitionType === "PP"
-                  ? [
-                      {
-                        key: "SAPP Standalone Prototype Order",
-                        text: "SAPP Standalone Prototype Order",
-                      },
-                    ]
-                  : dropdownOptions
-              }
-              style={{ width: Number(itemWidth) - 30 }}
-            />
-          </Stack.Item>
-          <Stack.Item
-            grow
-            styles={{ root: { flexBasis: "100%", maxWidth: "100%" } }}
-          >
-            <FileUploader
-              title={t("Add RFQ Attachments")}
-              initalNum={4}
-              onFileSelect={(files) => setSelectedFiles(files)}
-            />
-          </Stack.Item>
+          </Stack>
         </Stack>
-        <Stack styles={{ root: { width: "50%" } }}>
-          <SupplierSelection
-            onContactsChange={(contacts) => setSelectedContacts(contacts)}
+        <h3 className="mainTitle noMargin">{t("Selected Parts")}</h3>
+        <DetailsList
+            items={state.selectedItems}
+            columns={columns}
+            setKey="set"
+            layoutMode={DetailsListLayoutMode.fixedColumns}
+            selectionMode={SelectionMode.none}
+        />
+        <Stack horizontal tokens={{ childrenGap: 10, padding: 10 }}>
+          <PrimaryButton
+              text={t("Back")}
+              onClick={() => {
+                openLeavePageDialog();
+              }}
+          />
+          <PrimaryButton
+              text={t("Submit")}
+              onClick={() => {
+                openRFQDialog();
+              }}
           />
         </Stack>
-      </Stack>
-      <h3 className="mainTitle noMargin">{t("Selected Parts")}</h3>
-      <DetailsList
-        items={state.selectedItems}
-        columns={columns}
-        setKey="set"
-        layoutMode={DetailsListLayoutMode.fixedColumns}
-        selectionMode={SelectionMode.none}
-      />
-      <Stack horizontal tokens={{ childrenGap: 10, padding: 10 }}>
-        <PrimaryButton
-          text={t("Back")}
-          onClick={() => {
-            openLeavePageDialog();
-          }}
-        />
-        <PrimaryButton
-          text={t("Submit")}
-          onClick={() => {
-            openRFQDialog();
-          }}
-        />
-      </Stack>
 
-      {/* RFQ Dialog */}
-      <Dialog
-        hidden={!isRFQDialogVisible}
-        onDismiss={closeRFQDialog}
-        dialogContentProps={{
-          type: DialogType.normal,
-          title: "Confirmation",
-          subText:
-            "Are you sure to send RFQ? Notification email will be sent to selected supplier contact.",
-        }}
-      >
-        <DialogFooter>
-          <PrimaryButton onClick={handleSubmit} text="Yes" />
-          <DefaultButton onClick={closeRFQDialog} text="No" />
-        </DialogFooter>
-      </Dialog>
+        {/* RFQ Dialog */}
+        <Dialog
+            hidden={!isRFQDialogVisible}
+            onDismiss={closeRFQDialog}
+            dialogContentProps={{
+              type: DialogType.normal,
+              title: "Confirmation",
+              subText:
+                  "Are you sure to send RFQ? Notification email will be sent to selected supplier contact.",
+            }}
+        >
+          <DialogFooter>
+            <PrimaryButton onClick={handleSubmit} text="Yes" />
+            <DefaultButton onClick={closeRFQDialog} text="No" />
+          </DialogFooter>
+        </Dialog>
 
-      {/* Leave Page Dialog */}
-      <Dialog
-        hidden={!isLeavePageDialogVisible}
-        onDismiss={closeLeavePageDialog}
-        dialogContentProps={{
-          type: DialogType.normal,
-          title: "Warning",
-          subText:
-            "Are you sure to leave this page? All filled contents will be lost.",
-        }}
-      >
-        <DialogFooter>
-          <PrimaryButton onClick={() => navigate("/requisition")} text="Yes" />
-          <DefaultButton onClick={closeLeavePageDialog} text="No" />
-        </DialogFooter>
-      </Dialog>
-    </Stack>
+        {/* Leave Page Dialog */}
+        <Dialog
+            hidden={!isLeavePageDialogVisible}
+            onDismiss={closeLeavePageDialog}
+            dialogContentProps={{
+              type: DialogType.normal,
+              title: "Warning",
+              subText:
+                  "Are you sure to leave this page? All filled contents will be lost.",
+            }}
+        >
+          <DialogFooter>
+            <PrimaryButton onClick={() => navigate("/requisition")} text="Yes" />
+            <DefaultButton onClick={closeLeavePageDialog} text="No" />
+          </DialogFooter>
+        </Dialog>
+      </Stack>
   );
 };
 
