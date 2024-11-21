@@ -330,14 +330,12 @@ const Requisition: React.FC = () => {
         createdDateFrom,
         createdDateTo,
       } = filters;
-
-      // @ts-ignore
       return (
           (!requisitionType || item.RequisitionType === requisitionType) &&
           (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
           (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
-              item.Section.toLowerCase().includes(section.toLowerCase())) &&
+              item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
           (!status || item.Status === status) &&
           (!partNumber ||
               item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
