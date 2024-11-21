@@ -13,7 +13,6 @@ export interface IRFQState {
   AllRFQs: IRFQGrid[];
   currentRFQ: IRFQGrid;
   currentRFQRequisitions: IRequisitionGrid[];
-  newRFQId: string;
 }
 export const initialState: IRFQState = {
   status: RFQStatus.Idle,
@@ -21,5 +20,4 @@ export const initialState: IRFQState = {
   AllRFQs: [],
   currentRFQ: {},
   currentRFQRequisitions: [],
-  newRFQId: "",
 };

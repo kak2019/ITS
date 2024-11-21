@@ -173,7 +173,7 @@ export const initialUploadRFQAttachmentsAction = createAsyncThunk(
   }
 );
 export const getRFQAttachmentsAction = createAsyncThunk(
-  `${FeatureKey.RFQS}/uploadFile`,
+  `${FeatureKey.RFQS}/getRFQAttachments`,
   async (rfqId: string): Promise<File[]> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));

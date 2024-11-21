@@ -57,7 +57,6 @@ const rfqsSlice = createSlice({
       })
       .addCase(createRFQAction.fulfilled, (state, action) => {
         state.status = RFQStatus.Idle;
-        state.newRFQId = action.payload as string;
       })
       .addCase(createRFQAction.rejected, (state, action) => {
         state.status = RFQStatus.Failed;

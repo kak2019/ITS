@@ -271,12 +271,12 @@ const Requisition: React.FC = () => {
         OrderType: selectedValue,
         Parma: form.parma,
       };
-      createRFQ(rfqData);
+      const newRFQId = await createRFQ(rfqData);
       // 上传文件
       console.log("Fetched data on blur:", selectedFiles);
       if (selectedFiles.length > 0) {
         // 假设 selectedFiles 是存储文件的状态
-        initialUploadRFQAttachments(selectedFiles, "35");
+        initialUploadRFQAttachments(selectedFiles, newRFQId);
         console.log("Files uploaded successfully");
       }
 

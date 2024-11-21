@@ -311,7 +311,7 @@ export const createRFQAction = createAsyncThunk(
           RFQNo_x002e_: rfq.RFQNo,
           RFQType: rfq.RFQType,
         });
-      return addItemResult.data.ID;
+      return addItemResult.ID;
     } catch (err) {
       Logger.write(
         `${CONST.LOG_SOURCE} (_createRFQ) - ${JSON.stringify(err)}`,

@@ -24,7 +24,3 @@ export const currentRFQRequisitionsSelector = createSelector(
   featureStateSelector,
   (state: IRFQState) => state?.currentRFQRequisitions
 );
-export const newRFQIdSelector = createSelector(
-  featureStateSelector,
-  (state: IRFQState) => state?.newRFQId
-);

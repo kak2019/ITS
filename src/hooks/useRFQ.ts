@@ -9,19 +9,17 @@ import {
   messageSelector,
   createRFQAction,
   getRFQAction,
-  newRFQIdSelector,
 } from "../features/rfqs";
 import { IRFQGrid } from "../model/rfq";
 
 type RFQOperators = [
   isFetching: RFQStatus,
   allRFQs: IRFQGrid[],
-  newRFQId: string,
   errorMessage: string,
   getAllRFQs: () => void,
   getRFQ: (rfq: string) => void,
   updateRFQ: (rfq: IRFQGrid) => void,
-  createRFQ: (rfq: IRFQGrid) => void
+  createRFQ: (rfq: IRFQGrid) => Promise<string>
 ];
 
 export const useRFQ = (): Readonly<RFQOperators> => {
@@ -29,7 +27,6 @@ export const useRFQ = (): Readonly<RFQOperators> => {
   const isFetching = useAppSelector(isFetchingSelector);
   const errorMessage = useAppSelector(messageSelector);
   const allRFQs = useAppSelector(allRFQsSelector);
-  const newRFQId = useAppSelector(newRFQIdSelector);
   const getAllRFQs = useCallback(() => {
     return dispatch(getAllRFQsAction());
   }, [dispatch]);
@@ -46,15 +43,19 @@ export const useRFQ = (): Readonly<RFQOperators> => {
     [dispatch]
   );
   const createRFQ = useCallback(
-    (rfq: IRFQGrid) => {
-      return dispatch(createRFQAction(rfq));
+    async (rfq: IRFQGrid): Promise<string> => {
+      const actionResult = await dispatch(createRFQAction(rfq));
+      if (createRFQAction.fulfilled.match(actionResult)) {
+        return actionResult.payload as string;
+      } else {
+        throw new Error("Error When Return New RFQ ID");
+      }
     },
     [dispatch]
   );
   return [
     isFetching,
     allRFQs,
-    newRFQId,
     errorMessage,
     getAllRFQs,
     getRFQ,
