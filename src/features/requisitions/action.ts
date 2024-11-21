@@ -41,7 +41,8 @@ export const getAllRequisitionsAction = createAsyncThunk(
             "RequisitionBuyer",
             "Handler",
             "HandlerName",
-            "BuyerFullInfo"
+            "BuyerFullInfo",
+            "SectionDescription"
           )
           .top(5000)
           .skip(pageIndex * 5000)();
@@ -72,6 +73,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
               Handler: item.Handler,
               HandlerName: item.HandlerName,
               BuyerFullInfo: item.BuyerFullInfo,
+              SectionDescription: item.SectionDescription,
             } as IRequisitionGrid;
           })
         );
@@ -79,7 +81,7 @@ export const getAllRequisitionsAction = createAsyncThunk(
         pageIndex += 1;
       }
 
-        return items;
+      return items;
     } catch (err) {
       Logger.write(
         `${CONST.LOG_SOURCE} (_getAllRequisitions) - ${JSON.stringify(err)}`,
@@ -101,7 +103,7 @@ export const updateRequisitionAction = createAsyncThunk(
     try {
       await spCache.web.lists
         .getByTitle(CONST.LIST_NAME_REQUISITION)
-        .items.getById(+Requisition.ID)
+        .items.getById(+Requisition.ID!)
         .update({
           ID: Requisition.ID,
           Title: Requisition.UniqueIdentifier,
