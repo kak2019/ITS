@@ -6,6 +6,7 @@ import {
     IColumn,
     Icon,
     IconButton,
+    IDropdownOption,
     Label,
     PrimaryButton,
     Selection,
@@ -20,6 +21,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRFQ } from "../../../../hooks/useRFQ";
+import { useUser } from "../../../../hooks";
 
 
 // 定义接口
@@ -41,6 +43,9 @@ interface Item {
 
 const RFQ: React.FC = () => {
     const [isFetching, allRFQs, , getAllRFQs, , , ,] = useRFQ();
+    const {getUserType} =useUser();
+    const [userType, setUserType] = useState<string>("Unknown");
+    
     // const [
     //     ,
     //     allRequisitions,
@@ -65,7 +70,7 @@ const RFQ: React.FC = () => {
         rfqtype: '',
         buyer: '',
         section: '',
-        status: '',
+        status: [],
         parma: '',
         rfqreleasedatefrom: '',
         rfqreleasedateto: '',
@@ -77,7 +82,7 @@ const RFQ: React.FC = () => {
         rfqtype: '',
         buyer: '',
         section: '',
-        status: '',
+        status: [] as string[],
         parma: '',
         rfqreleasedatefrom: '',
         rfqreleasedateto: '',
@@ -93,7 +98,7 @@ const RFQ: React.FC = () => {
         { key: "Price Change", text: "Price Change" },
     ];
     const statusOptions = [
-        { key: "", text: "All" },
+        
         { key: "New", text: "New" },
         { key: "In Progress", text: "In Progress" },
         { key: "Sent to GPS", text: "Sent to GPS" },
@@ -174,6 +179,24 @@ const RFQ: React.FC = () => {
 
 
 
+      // 获取用户类型
+      React.useEffect(() => {
+        const fetchUserType = async () => {
+            const identifier = "joy.zhao@udtrucks.com"; // 替换为实际的用户标识符
+            getUserType(identifier)
+    .then(type => {
+        setUserType(type);
+        console.log("UserType: ", type);
+        
+    })
+    .catch(error => {
+        console.error("Error fetching user type:", error);
+    });
+        };
+
+        void fetchUserType();
+    }, [getUserType]);
+
     // 创建 Selection 对象
     const selection = React.useRef<Selection>(new Selection({
         onSelectionChanged: () => {
@@ -183,6 +206,7 @@ const RFQ: React.FC = () => {
             setIsItemSelected(selected.length > 0);
             // console.log("isselected: ", isItemSelected)
             console.log("Selected item: ", selected);
+            
 
         },
     }));
@@ -209,6 +233,23 @@ const RFQ: React.FC = () => {
             rfqduedateto: rfqDueDateTo ? new Date(rfqDueDateTo.getTime() + 86400000).toISOString() : "",
         });
     };
+    
+    const handleMultiSelectChange = <K extends keyof typeof searchConditions>(
+        key: K,
+        option?: IDropdownOption
+    ) => {
+        setSearchConditions(prev => {
+            const currentSelection = Array.isArray(prev[key]) ? (prev[key] as string[]) : [];
+            const updatedSelection = option?.selected
+                ? [...currentSelection, option.key as string] // 如果选中，添加到数组
+                : currentSelection.filter(item => item !== option?.key); // 如果取消选中，从数组中移除
+            return {
+                ...prev,
+                [key]: updatedSelection, // 更新状态
+            };
+        });
+    };
+    
 
     const getFilteredItems = () => {
         return allRFQs.filter(item => {
@@ -227,12 +268,17 @@ const RFQ: React.FC = () => {
             const dueTo = appliedFilters.rfqduedateto
                 ? new Date(appliedFilters.rfqduedateto)
                 : null;
+            // 更新 status 过滤逻辑
+        const statusFilter = appliedFilters.status.length === 0
+        ? true // 如果没有选择任何状态，表示不过滤
+        : appliedFilters.status.includes(item.RFQStatus || ""); // 检查记录的 RFQStatus 是否在选择列表中
+
             return (
+                statusFilter &&
                 (!appliedFilters.rfqtype || item.RFQType === appliedFilters.rfqtype) &&
                 (!appliedFilters.rfqno || item.RFQNo?.includes(appliedFilters.rfqno)) &&
                 (!appliedFilters.buyer || item.BuyerInfo?.includes(appliedFilters.buyer)) &&
                 (!appliedFilters.section || item.HandlerName?.includes(appliedFilters.section)) &&
-                (!appliedFilters.status || item.RFQStatus?.includes(appliedFilters.status)) &&
                 (!appliedFilters.parma || item.Parma?.includes(appliedFilters.parma)) &&
                 (!releaseFrom ||
                     (releaseDate >= releaseFrom)) &&
@@ -292,6 +338,7 @@ const RFQ: React.FC = () => {
     };
 
 
+    
 
     React.useEffect(() => {
         if (allRFQs.length > 0) {
@@ -431,20 +478,24 @@ const RFQ: React.FC = () => {
                     )}
                     <Dropdown
                         label="Status"
-                        selectedKey={searchConditions.status}
-                        onChange={(e, option) => handleSearchChange('status', option?.key?.toString() || "")}
+                        selectedKeys={searchConditions.status}
+                        multiSelect
+                        onChange={(e, option) => {if(option)
+                        {console.log("Selected status: ",option)}
+                            handleMultiSelectChange('status', option)}}
                         options={statusOptions}
+                         
                         styles={fieldStyles}
                     />
 
                     {/* 第二行 */}
 
-                    <TextField
+                    {userType === "Buyer" && (<TextField
                         label="Parma"
                         value={searchConditions.parma}
                         onChange={(e, newValue) => handleSearchChange('parma', newValue || "")}
                         styles={fieldStyles}
-                    />
+                    />)}
                     <DatePicker
                         label="RFQ Release Date From"
                         value={rfqReleaseDateFrom}
