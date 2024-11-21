@@ -149,8 +149,8 @@ export const initialUploadRFQAttachmentsAction = createAsyncThunk(
       await spCache.web.folders.addUsingPath(
         `${CONST.LIBRARY_RFQATTACHMENTS_NAME}/${arg.rfqId}`
       );
-      const reader = new FileReader();
       arg.files.forEach((file) => {
+        const reader = new FileReader();
         reader.onloadend = async () => {
           const arrayBuffer = reader.result as ArrayBuffer;
           await spCache.web
@@ -159,6 +159,7 @@ export const initialUploadRFQAttachmentsAction = createAsyncThunk(
             )
             .files.addUsingPath(file.name, arrayBuffer);
         };
+        reader.readAsArrayBuffer(file);
       });
     } catch (err) {
       Logger.write(
