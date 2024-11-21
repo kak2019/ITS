@@ -41,7 +41,13 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
-  const [isFetching, allRFQs, , , getAllRFQs, , , ,] = useRFQ();
+  const [ isFetching,
+    allRFQs,
+    ,
+    getAllRFQs,
+    ,
+    ,
+    ,] = useRFQ();
   // const [
   //     ,
   //     allRequisitions,

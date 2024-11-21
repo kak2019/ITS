@@ -331,10 +331,11 @@ const Requisition: React.FC = () => {
         createdDateTo,
       } = filters;
 
+      // @ts-ignore
       return (
           (!requisitionType || item.RequisitionType === requisitionType) &&
           (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
-          (!parma || item.Parma.toLowerCase().includes(parma.toLowerCase())) &&
+          (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase())) &&
           (!status || item.Status === status) &&
@@ -342,12 +343,12 @@ const Requisition: React.FC = () => {
               item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
           (!qualifier || item.Qualifier === qualifier) &&
           (!project ||
-              item.Project.toLowerCase().includes(project.toLowerCase())) &&
+              item.Project?.toLowerCase().includes(project.toLowerCase())) &&
           (!materialUser || item.MaterialUser.toString() === materialUser) &&
           (!rfqNumber ||
-              item.RfqNo.toLowerCase().includes(rfqNumber.toLowerCase())) &&
-          (!requiredWeekFrom || item.RequiredWeek >= requiredWeekFrom) &&
-          (!requiredWeekTo || item.RequiredWeek <= requiredWeekTo) &&
+              item.RfqNo?.toLowerCase().includes(rfqNumber.toLowerCase())) &&
+          (!requiredWeekFrom || (item.RequiredWeek??"") >= requiredWeekFrom) &&
+          (!requiredWeekTo || (item.RequiredWeek??"") <= requiredWeekTo) &&
           (!createdDateFrom ||
               (item.CreateDate && new Date(item.CreateDate) >= createdDateFrom)) &&
           (!createdDateTo ||
