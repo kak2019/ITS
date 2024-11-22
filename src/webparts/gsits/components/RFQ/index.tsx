@@ -42,6 +42,7 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
+    
     const [isFetching, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
     const [userType, setUserType] = useState<string>("Unknown");
@@ -178,11 +179,67 @@ const RFQ: React.FC = () => {
     };
 
 
+    const [email, setEmail] = useState<string>("");
+    const [userInfo, setUserInfo] = useState<any>(null); // 存储用户信息
+
+    React.useEffect(() => {
+        const fetchUserEmail = async () => {
+            try {
+                const contextInfo = (window as any)._spPageContextInfo;
+                if (!contextInfo) {
+                    throw new Error("_spPageContextInfo is not available");
+                }
+        
+                const response = await fetch(`${contextInfo.webAbsoluteUrl}/_api/web/currentuser`, {
+                    headers: {
+                        Accept: "application/json;odata=verbose",
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to fetch current user");
+                }
+                const data = await response.json();
+                console.log("User Email:", data.d.Email);
+                return setEmail(data.d.Email);
+            } catch (error) {
+                console.error("Error fetching current user:", error);
+            }
+        };
+
+        void fetchUserEmail();
+    }, []);
+
+    React.useEffect(() => {
+        const fetchUserInfo = async () => {
+            if (email) {
+                try {
+                    const response = await fetch(`https://api-url/GetGPSUser/${email}`);
+                    if (!response.ok) throw new Error("Failed to fetch user data");
+                    const userData = await response.json();
+                    setUserInfo(userData);
+                    console.log("Fetched User Info:", userData);
+
+                    // 如果用户角色是 MAN，设置 section 为默认值
+                    if (userInfo?.role === "MAN") {
+                        setSearchConditions((prev) => ({
+                            ...prev,
+                            section: userData.sectionCode || "", // 设置 section 的默认值
+                        }));
+                    }
+                } catch (error) {
+                    console.error("Error fetching user info:", error);
+                }
+            }
+        };
+
+        void fetchUserInfo();
+    }, [email]);
+
 
       // 获取用户类型
       React.useEffect(() => {
         const fetchUserType = async () => {
-            const identifier = "joy.zhao@udtrucks.com"; // 替换为实际的用户标识符
+            const identifier = email; // 替换为实际的用户标识符
             getUserType(identifier)
     .then(type => {
         setUserType(type);
@@ -275,11 +332,11 @@ const RFQ: React.FC = () => {
 
             return (
                 statusFilter &&
-                (!appliedFilters.rfqtype || item.RFQType === appliedFilters.rfqtype) &&
-                (!appliedFilters.rfqno || item.RFQNo?.includes(appliedFilters.rfqno)) &&
-                (!appliedFilters.buyer || (item.BuyerInfo?.includes(appliedFilters.buyer)) || item.HandlerName?.includes(appliedFilters.buyer)) &&
-                (!appliedFilters.section || item.SectionInfo?.includes(appliedFilters.section)) &&
-                (!appliedFilters.parma || item.Parma?.includes(appliedFilters.parma)) &&
+                (!appliedFilters.rfqtype || item.RFQType?.toLowerCase() === appliedFilters.rfqtype.toLowerCase()) &&
+                (!appliedFilters.rfqno || item.RFQNo?.toLowerCase().includes(appliedFilters.rfqno.toLowerCase())) &&
+                (!appliedFilters.buyer || (item.BuyerInfo?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) || item.HandlerName?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) &&
+                (!appliedFilters.section || item.SectionInfo?.toLowerCase().includes(appliedFilters.section.toLowerCase())) &&
+                (!appliedFilters.parma || item.Parma?.toLowerCase().includes(appliedFilters.parma.toLowerCase())) &&
                 (!releaseFrom ||
                     (releaseDate >= releaseFrom)) &&
                 (!releaseTo ||
