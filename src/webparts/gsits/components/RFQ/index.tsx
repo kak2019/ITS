@@ -47,7 +47,7 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
-    const [, supplierId, , getSupplierId] = useRequisition();
+    const [, supplierId, , getSupplierId] = useRequisition() ;
     let userEmail = "";
     const [isFetchingRFQ, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
@@ -190,6 +190,7 @@ const RFQ: React.FC = () => {
       throw new Error("AppContext is not provided or context is undefined");
     } else {
       userEmail = ctx.context._pageContext._user.email;
+      console.log("useremail",userEmail)
     }
     const [userDetails, setUserDetails] = useState({
       role: "",
@@ -243,7 +244,8 @@ const RFQ: React.FC = () => {
       
 
       React.useEffect(()=>{
-        getSupplierId()
+        if(userType === "Guest" && userEmail){
+        getSupplierId(userEmail)}
       },[getSupplierId]);
 
       // 获取用户类型
@@ -253,10 +255,10 @@ const RFQ: React.FC = () => {
             getUserType(identifier)
     .then(type => {
         setUserType(type);
-        if(type === "Guest")
+        if(type === "Member")
             {setAppliedFilters((prev) => ({
             ...prev,
-            section: supplierId.toString() || "",
+            parma: supplierId.toString() || "",
           }));}
         console.log("UserType: ", type);
         
