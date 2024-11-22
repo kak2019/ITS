@@ -26,6 +26,7 @@ import AppContext from "../../../../AppContext";
 import { getAADClient } from "../../../../pnpjsConfig";
 import { CONST } from "../../../../config/const";
 import { AadHttpClient } from "@microsoft/sp-http";
+import { useRequisition } from "../../../../hooks/useRequisition";
 
 
 // 定义接口
@@ -46,8 +47,9 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
+    const [, supplierId, , getSupplierId] = useRequisition();
     let userEmail = "";
-    const [isFetching, allRFQs, , getAllRFQs, , , ,] = useRFQ();
+    const [isFetchingRFQ, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
     const [userType, setUserType] = useState<string>("Unknown");
     
@@ -238,6 +240,11 @@ const RFQ: React.FC = () => {
         );
       }, []);
 
+      
+
+      React.useEffect(()=>{
+        getSupplierId()
+      },[getSupplierId]);
 
       // 获取用户类型
       React.useEffect(() => {
@@ -246,9 +253,15 @@ const RFQ: React.FC = () => {
             getUserType(identifier)
     .then(type => {
         setUserType(type);
+        if(type === "Guest")
+            {setAppliedFilters((prev) => ({
+            ...prev,
+            section: supplierId.toString() || "",
+          }));}
         console.log("UserType: ", type);
         
     })
+
     .catch(error => {
         console.error("Error fetching user type:", error);
     });
@@ -609,7 +622,7 @@ const RFQ: React.FC = () => {
             )}
 
             {/* 结果展示区域 */}
-            {isFetching ? (
+            {isFetchingRFQ ? (
                 <Spinner label={t("Loading...")} size={SpinnerSize.large} />
             ) : (
                 <Stack>
