@@ -8,14 +8,14 @@ import {
 } from "../features/users";
 import { useAppDispatch, useAppSelector } from "./useApp";
 
-type RequisitionOperators = [
+type UserOperators = [
   isFetching: UserStatus,
   supplierId: string,
   errorMessage: string,
   getSupplierId: (email: string) => void
 ];
 
-export const useRequisition = (): Readonly<RequisitionOperators> => {
+export const useUsers = (): Readonly<UserOperators> => {
   const dispatch = useAppDispatch();
   const isFetching = useAppSelector(isFetchingSelector);
   const errorMessage = useAppSelector(messageSelector);
