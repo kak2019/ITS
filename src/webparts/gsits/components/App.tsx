@@ -22,7 +22,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
       hasTeamsContext,
       context
     } = this.props;
-
+    
     return (
       <AppContext.Provider value={{ context }}>
         <Provider store={store}>
@@ -42,7 +42,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
               <React.Suspense fallback={<Spinner label='Loading...' />} >
                 <Routes>
                   <Route path='/requisition' element={<Requisition />} />
-                  <Route path='/rfq' element={<RFQ />} />
+                  <Route path="/rfq" element={<RFQ />} /> {/* 传递 userType */}
                   <Route path='*' element={<PageNotFound />} />
                   <Route path='/' element={<Navigate to="/rfq" />} />
                   <Route path='/role' element={<UDUser />} />

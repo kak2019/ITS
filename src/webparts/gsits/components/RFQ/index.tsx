@@ -277,8 +277,8 @@ const RFQ: React.FC = () => {
                 statusFilter &&
                 (!appliedFilters.rfqtype || item.RFQType === appliedFilters.rfqtype) &&
                 (!appliedFilters.rfqno || item.RFQNo?.includes(appliedFilters.rfqno)) &&
-                (!appliedFilters.buyer || item.BuyerInfo?.includes(appliedFilters.buyer)) &&
-                (!appliedFilters.section || item.HandlerName?.includes(appliedFilters.section)) &&
+                (!appliedFilters.buyer || (item.BuyerInfo?.includes(appliedFilters.buyer)) || item.HandlerName?.includes(appliedFilters.buyer)) &&
+                (!appliedFilters.section || item.SectionInfo?.includes(appliedFilters.section)) &&
                 (!appliedFilters.parma || item.Parma?.includes(appliedFilters.parma)) &&
                 (!releaseFrom ||
                     (releaseDate >= releaseFrom)) &&
@@ -439,6 +439,7 @@ const RFQ: React.FC = () => {
                             padding: 20,
                             display: "grid",
                             gridTemplateColumns: "repeat(5, 1fr)", // 五等分
+                            gridTemplateRows: "auto auto auto", // 固定为 3 行
                             gap: "10px",
                         },
                     }}
@@ -490,7 +491,7 @@ const RFQ: React.FC = () => {
 
                     {/* 第二行 */}
 
-                    {userType === "Buyer" && (<TextField
+                    {userType === "Member" && (<TextField
                         label="Parma"
                         value={searchConditions.parma}
                         onChange={(e, newValue) => handleSearchChange('parma', newValue || "")}
@@ -529,7 +530,7 @@ const RFQ: React.FC = () => {
                     />
 
                     {/* 搜索按钮 */}
-                    <Stack.Item style={{ gridColumn: "5", justifySelf: "end" }}>
+                    <Stack.Item style={{ gridRow:"3",gridColumn: "5", justifySelf: "end" }}>
                         <PrimaryButton
                             text="Search"
                             styles={buttonStyles}
