@@ -22,6 +22,10 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRFQ } from "../../../../hooks/useRFQ";
 import { useUser } from "../../../../hooks";
+import AppContext from "../../../../AppContext";
+import { getAADClient } from "../../../../pnpjsConfig";
+import { CONST } from "../../../../config/const";
+import { AadHttpClient } from "@microsoft/sp-http";
 
 
 // 定义接口
@@ -42,7 +46,7 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
-    
+    let userEmail = "";
     const [isFetching, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
     const [userType, setUserType] = useState<string>("Unknown");
@@ -179,67 +183,66 @@ const RFQ: React.FC = () => {
     };
 
 
-    const [email, setEmail] = useState<string>("");
-    const [userInfo, setUserInfo] = useState<any>(null); // 存储用户信息
+    const ctx = React.useContext(AppContext);
+    if (!ctx || !ctx.context) {
+      throw new Error("AppContext is not provided or context is undefined");
+    } else {
+      userEmail = ctx.context._pageContext._user.email;
+    }
+    const [userDetails, setUserDetails] = useState({
+      role: "",
+      name: "",
+      sectionCode: "",
+      handlercode: ""
+    });
+    //console.log(userEmail);
+    // const [currentUserIDCode, setCurrentUserIDCode] = useState<string>("");
 
     React.useEffect(() => {
-        const fetchUserEmail = async () => {
-            try {
-                const contextInfo = (window as any)._spPageContextInfo;
-                if (!contextInfo) {
-                    throw new Error("_spPageContextInfo is not available");
-                }
-        
-                const response = await fetch(`${contextInfo.webAbsoluteUrl}/_api/web/currentuser`, {
-                    headers: {
-                        Accept: "application/json;odata=verbose",
-                    },
-                });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch current user");
-                }
-                const data = await response.json();
-                console.log("User Email:", data.d.Email);
-                return setEmail(data.d.Email);
-            } catch (error) {
-                console.error("Error fetching current user:", error);
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+        const fetchData = async () => {
+          try {
+            const client = getAADClient(); // 请确保getAADClient()已正确实现
+    
+            // 使用模板字符串构建完整的函数URL
+            const functionUrl = `${CONST.azureFunctionBaseUrl}/api/GetGPSUser/${userEmail}`;
+    
+            const response = await client.get(
+                functionUrl,
+                AadHttpClient.configurations.v1
+            );
+    
+            // 确保解析 response 时不抛出错误
+            const result = await response.json();
+            console.log(result);
+            if (result && result.role && result.name && result.sectionCode && result.handlercode) {
+              // 如果所有字段都有值，更新状态
+              setUserDetails({
+                role: result.role,
+                name: result.name,
+                sectionCode: result.sectionCode,
+                handlercode: result.handlercode,
+              });
+    
+            } else {
+              console.warn("Incomplete data received:", result);
             }
+          } catch (error) {
+            console.error("Error fetching GPS user props:", error);
+          }
         };
-
-        void fetchUserEmail();
-    }, []);
-
-    React.useEffect(() => {
-        const fetchUserInfo = async () => {
-            if (email) {
-                try {
-                    const response = await fetch(`https://api-url/GetGPSUser/${email}`);
-                    if (!response.ok) throw new Error("Failed to fetch user data");
-                    const userData = await response.json();
-                    setUserInfo(userData);
-                    console.log("Fetched User Info:", userData);
-
-                    // 如果用户角色是 MAN，设置 section 为默认值
-                    if (userInfo?.role === "MAN") {
-                        setSearchConditions((prev) => ({
-                            ...prev,
-                            section: userData.sectionCode || "", // 设置 section 的默认值
-                        }));
-                    }
-                } catch (error) {
-                    console.error("Error fetching user info:", error);
-                }
-            }
-        };
-
-        void fetchUserInfo();
-    }, [email]);
+    
+        fetchData().then(
+            (_) => _,
+            (_) => _
+        );
+      }, []);
 
 
       // 获取用户类型
       React.useEffect(() => {
         const fetchUserType = async () => {
-            const identifier = email; // 替换为实际的用户标识符
+            const identifier = userEmail; // 替换为实际的用户标识符
             getUserType(identifier)
     .then(type => {
         setUserType(type);
@@ -253,6 +256,7 @@ const RFQ: React.FC = () => {
 
         void fetchUserType();
     }, [getUserType]);
+    
 
     // 创建 Selection 对象
     const selection = React.useRef<Selection>(new Selection({
@@ -268,7 +272,14 @@ const RFQ: React.FC = () => {
         },
     }));
 
-
+    React.useEffect(() => {
+        if (userDetails.role === "Manager") {
+            setAppliedFilters((prev) => ({
+            ...prev,
+            section: userDetails.sectionCode || "",
+          }));
+        } 
+      }, [userDetails]);
 
     React.useEffect(() => {
         getAllRFQs();
