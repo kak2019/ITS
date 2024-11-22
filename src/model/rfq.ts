@@ -11,7 +11,6 @@ export interface IRFQGrid {
   RFQStatus?: string;
   BuyerInfo?: string;
   SectionInfo?: string;
-  Comment?: string;
   CommentHistory?: string;
   RequisitionIds?: string;
   QuoteReceivedDate?: Date;
