@@ -26,7 +26,7 @@ import AppContext from "../../../../AppContext";
 import { getAADClient } from "../../../../pnpjsConfig";
 import { CONST } from "../../../../config/const";
 import { AadHttpClient } from "@microsoft/sp-http";
-import { useRequisition } from "../../../../hooks/useRequisition";
+import { useUsers } from "../../../../hooks/useUsers";
 
 
 // 定义接口
@@ -47,7 +47,7 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
-    const [, supplierId, , getSupplierId] = useRequisition() ;
+    const [, supplierId, , getSupplierId] = useUsers() ;
     let userEmail = "";
     const [isFetchingRFQ, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
@@ -241,36 +241,68 @@ const RFQ: React.FC = () => {
         );
       }, []);
 
+      React.useEffect(() => {
+        // 确保仅在 userEmail 存在时调用
+        if (userEmail) {
+            getUserType(userEmail)
+                .then(type => {
+                    if (userType !== type) { // 只有当 userType 变化时才更新状态
+                        setUserType(type);
+                        console.log("UserType updated to: ", type);
+                    }
+                    if (type === "Member") {
+                        console.log("supplierID", supplierId);
+                        setAppliedFilters((prev) => ({
+                            ...prev,
+                            parma: supplierId.toString() || "",
+                            
+                        }));
+                    }
+                })
+                .catch(error => console.error("Error fetching user type:", error));
+        }
+    }, [userEmail, supplierId]); // 将依赖减少为关键变量
+    
+    React.useEffect(() => {
+        // 如果是 Guest，且 userEmail 存在，则调用 getSupplierId
+        if (userType === "Member" && userEmail) {
+            getSupplierId(userEmail);
+           
+            
+        }
+        
+    }, [userType, userEmail, getSupplierId]);
+    
       
 
-      React.useEffect(()=>{
-        if(userType === "Guest" && userEmail){
-        getSupplierId(userEmail)}
-      },[getSupplierId]);
+    //   React.useEffect(()=>{
+    //     if(userType === "Guest" && userEmail){
+    //     getSupplierId(userEmail)}
+    //   },[getSupplierId,userEmail]);
 
-      // 获取用户类型
-      React.useEffect(() => {
-        const fetchUserType = async () => {
-            const identifier = userEmail; // 替换为实际的用户标识符
-            getUserType(identifier)
-    .then(type => {
-        setUserType(type);
-        if(type === "Member")
-            {setAppliedFilters((prev) => ({
-            ...prev,
-            parma: supplierId.toString() || "",
-          }));}
-        console.log("UserType: ", type);
+    //   // 获取用户类型
+    //   React.useEffect(() => {
+    //     const fetchUserType = async () => {
+    //         const identifier = userEmail; // 替换为实际的用户标识符
+    //         getUserType(identifier)
+    // .then(type => {
+    //     setUserType(type);
+    //     if(type === "Member")
+    //         {setAppliedFilters((prev) => ({
+    //         ...prev,
+    //         parma: supplierId.toString() || "",
+    //       }));}
+    //     console.log("UserType: ", type);
         
-    })
+    // })
 
-    .catch(error => {
-        console.error("Error fetching user type:", error);
-    });
-        };
+    // .catch(error => {
+    //     console.error("Error fetching user type:", error);
+    // });
+    //     };
 
-        void fetchUserType();
-    }, [getUserType]);
+    //     void fetchUserType();
+    // }, [getUserType]);
     
 
     // 创建 Selection 对象
