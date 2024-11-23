@@ -225,7 +225,8 @@ const RFQ: React.FC = () => {
                 name: result.name,
                 sectionCode: result.sectionCode,
                 handlercode: result.handlercode,
-              });
+              }); console.log("UserDetials: ", userDetails)
+              
     
             } else {
               console.warn("Incomplete data received:", result);
@@ -250,7 +251,7 @@ const RFQ: React.FC = () => {
                         setUserType(type);
                         console.log("UserType updated to: ", type);
                     }
-                    if (type === "Member") {
+                    if (type === "Guest") {
                         console.log("supplierID", supplierId);
                         setAppliedFilters((prev) => ({
                             ...prev,
@@ -265,7 +266,7 @@ const RFQ: React.FC = () => {
     
     React.useEffect(() => {
         // 如果是 Guest，且 userEmail 存在，则调用 getSupplierId
-        if (userType === "Member" && userEmail) {
+        if (userType === "Guest" && userEmail) {
             getSupplierId(userEmail);
            
             
@@ -387,9 +388,11 @@ const RFQ: React.FC = () => {
         const statusFilter = appliedFilters.status.length === 0
         ? true // 如果没有选择任何状态，表示不过滤
         : appliedFilters.status.includes(item.RFQStatus || ""); // 检查记录的 RFQStatus 是否在选择列表中
+        const parmaMatch = userType === "Guest" ? item.Parma === appliedFilters.parma // 严格匹配
+        : !appliedFilters.parma || item.Parma?.toLowerCase().includes(appliedFilters.parma.toLowerCase());
 
             return (
-                statusFilter &&
+                statusFilter && parmaMatch &&
                 (!appliedFilters.rfqtype || item.RFQType?.toLowerCase() === appliedFilters.rfqtype.toLowerCase()) &&
                 (!appliedFilters.rfqno || item.RFQNo?.toLowerCase().includes(appliedFilters.rfqno.toLowerCase())) &&
                 (!appliedFilters.buyer || (item.BuyerInfo?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) || item.HandlerName?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) &&
@@ -563,6 +566,7 @@ const RFQ: React.FC = () => {
 
                     <Dropdown
                         label="Type"
+                        placeholder="Optional"
                         selectedKey={searchConditions.rfqtype}
                         onChange={(e, option) => handleSearchChange('rfqtype', option?.key?.toString() as string || '')}
                         options={typeOptions}
