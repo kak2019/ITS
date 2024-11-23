@@ -225,8 +225,8 @@ const RFQ: React.FC = () => {
                 name: result.name,
                 sectionCode: result.sectionCode,
                 handlercode: result.handlercode,
-              }); console.log("UserDetials: ", userDetails)
-              
+              }); 
+
     
             } else {
               console.warn("Incomplete data received:", result);
@@ -327,6 +327,7 @@ const RFQ: React.FC = () => {
             section: userDetails.sectionCode || "",
           }));
         } 
+        console.log("UserDetials: ", userDetails)
       }, [userDetails]);
 
     React.useEffect(() => {
