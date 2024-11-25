@@ -19,7 +19,7 @@ export interface IRequisitionGrid {
   ReqBuyer: string; //Column "Requisition Buyer"
   Handler: string; //Column "Handler"
   HandlerName: string; //Column "Handler Name"
-  BuyerFullInfo: string; //Column "Buyer Full Info"
-  SectionDescription: string; //Column "Section Description"
+  BuyerFullInfo: string; //Column "Buyer Full Info" Used for Buyer filter
+  SectionDescription: string; //Column "Section Description" Used for Section filter
   Porg: string; //Column "Porg"
 }
