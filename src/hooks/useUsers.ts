@@ -4,18 +4,18 @@ import {
   isFetchingSelector,
   messageSelector,
   supplierIdSelector,
-  UserStatus,
-} from "../features/users";
+  UserRoleStatus,
+} from "../features/userRoles";
 import { useAppDispatch, useAppSelector } from "./useApp";
 
-type UserOperators = [
-  isFetching: UserStatus,
+type UserRoleOperators = [
+  isFetching: UserRoleStatus,
   supplierId: string,
   errorMessage: string,
   getSupplierId: (email: string) => void
 ];
 
-export const useUsers = (): Readonly<UserOperators> => {
+export const useUsers = (): Readonly<UserRoleOperators> => {
   const dispatch = useAppDispatch();
   const isFetching = useAppSelector(isFetchingSelector);
   const errorMessage = useAppSelector(messageSelector);

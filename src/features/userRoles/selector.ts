@@ -1,22 +1,22 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
-import { IUserState } from "./usersSlice";
+import { IUserRoleState } from "./userRolesSlice";
 
-const featureStateSelector = (state: RootState): object => state.users;
+const featureStateSelector = (state: RootState): object => state.userRoles;
 
 export const isFetchingSelector = createSelector(
   featureStateSelector,
-  (state: IUserState) => state?.status
+  (state: IUserRoleState) => state?.status
 );
 export const messageSelector = createSelector(
   featureStateSelector,
-  (state: IUserState) => state?.message
+  (state: IUserRoleState) => state?.message
 );
 export const supplierIdSelector = createSelector(
   featureStateSelector,
-  (state: IUserState) => state?.SupplierId
+  (state: IUserRoleState) => state?.SupplierId
 );
 export const allUserRolesSelector = createSelector(
   featureStateSelector,
-  (state: IUserState) => state?.AllUserRoles
+  (state: IUserRoleState) => state?.AllUserRoles
 );

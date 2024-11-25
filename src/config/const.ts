@@ -36,6 +36,6 @@ const FeatureKey = {
   QUOTATIONS: "QUOTATIONS",
   DOCUMENTS: "DOCUMENTS",
   REQUISITIONS: "REQUISITIONS",
-  USERS: "USERS",
+  USERROLES: "USERROLES",
 } as const;
 export { CONST, FeatureKey };

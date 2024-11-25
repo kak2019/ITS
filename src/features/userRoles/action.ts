@@ -10,7 +10,7 @@ import { IUserMapping, IUserRole } from "../../model/user";
 
 //#region actions
 export const getSupplierIdByUserEmailAction = createAsyncThunk(
-  `${FeatureKey.USERS}/getSupplierIdByUserEmail`,
+  `${FeatureKey.USERROLES}/getSupplierIdByUserEmail`,
   async (email: string): Promise<string> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));
@@ -50,7 +50,7 @@ export const getSupplierIdByUserEmailAction = createAsyncThunk(
   }
 );
 export const getUserRoleAction = createAsyncThunk(
-  `${FeatureKey.USERS}/getUserRole`,
+  `${FeatureKey.USERROLES}/getUserRole`,
   async (): Promise<IUserRole[]> => {
     const sp = spfi(getSP());
     const spCache = sp.using(Caching({ store: "session" }));
