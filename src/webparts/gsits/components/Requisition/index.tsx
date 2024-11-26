@@ -93,8 +93,8 @@ const Requisition: React.FC = () => {
 
       // const arr: Item[] = selection.getSelection()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      // 如果 Parma 有值，返回 false，否则返回 true
-      return !item.Parma && item.handler === userDetails.handlercode;
+      // 如果 Parma 有值，返回 false，否则返回 true //&& item.handler === userDetails.handlercode;
+      return !item.Parma
     },
     onSelectionChanged: () => {
       if(status.current) return
@@ -347,7 +347,7 @@ const Requisition: React.FC = () => {
 
       return (
           (requisitionType.length === 0 || requisitionType.includes(item.RequisitionType)) &&
-          (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
+          (!buyer || (item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase()))) &&
           (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
@@ -418,7 +418,7 @@ const Requisition: React.FC = () => {
   }, [userDetails]);
   useEffect(() => {
     getAllRequisitions();
-  }, []);
+  }, [getAllRequisitions]);
 
 
   useEffect(() => {
@@ -680,12 +680,31 @@ const Requisition: React.FC = () => {
                       grow
                       styles={{ root: { flexBasis: itemWidth, maxWidth: itemWidth } }}
                   >
-                    <TextField
+                    {/*<TextField*/}
+                    {/*    label={t("Material User")}*/}
+                    {/*    onChange={(e, newValue) =>*/}
+                    {/*        setFilters((prev) => ({*/}
+                    {/*          ...prev,*/}
+                    {/*          materialUser: newValue || "",*/}
+                    {/*        }))*/}
+                    {/*    }*/}
+                    {/*/>*/}
+                    <Dropdown
                         label={t("Material User")}
-                        onChange={(e, newValue) =>
+                        placeholder="Please select"
+                        options={[
+                          { key: "8374", text: "8374" },
+                          { key: "2921", text: "2921" },
+                          { key: "2924", text: "2924" },
+                          { key: "2920", text: "2920" },
+                          { key: "2922", text: "2922" },
+                          { key: "8371", text: "8371" },
+                          { key: "8462", text: "8462" }
+                        ]}
+                        onChange={(e, option) =>
                             setFilters((prev) => ({
                               ...prev,
-                              materialUser: newValue || "",
+                              materialUser: String(option?.key || ""),
                             }))
                         }
                     />
