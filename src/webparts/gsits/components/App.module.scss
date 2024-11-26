@@ -1,6 +1,9 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
 .gsits {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   overflow: hidden;
   padding: 0;
   color: "[theme:bodyText, default: #323130]";
@@ -12,13 +15,24 @@
   }
 }
 
-nav {
+.nav {
+  position: fixed;
+  top:0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
   display: flex;
   justify-content: space-between; 
   align-items: center; 
   height: 3em;
   padding: 0 1.5em;
   box-sizing: border-box;
+}
+.contentMain
+{
+  margin-top: 3em;
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 .toggleContainer {

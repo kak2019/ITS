@@ -28,7 +28,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
         <Provider store={store}>
           <Router>
             <section className={`${styles.gsits} ${hasTeamsContext ? styles.teams : ''}`}>
-              <nav>
+              <nav className={styles.nav}>
                 <ul>
                   <li><NavLink to="/requisition" className={({ isActive }) => isActive ? styles.active : ''}>New Part Requisition</NavLink></li>
                   <li><NavLink to="/pricechange" className={({ isActive }) => isActive ? styles.active : ''}>Price Change Request</NavLink></li>
@@ -39,6 +39,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <LanguageToggle/>
                 </div>
               </nav>
+              <div className={styles.contentMain}>
               <React.Suspense fallback={<Spinner label='Loading...' />} >
                 <Routes>
                   <Route path='/requisition' element={<Requisition />} />
@@ -50,6 +51,7 @@ export default class Gsits extends React.Component<IGsitsProps> {
                   <Route path="/demo" element={<DemoForm/>} />
                 </Routes>
               </React.Suspense>
+              </div>
             </section>
           </Router>
         </Provider>
