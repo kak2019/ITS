@@ -6,7 +6,10 @@ import {
     IColumn,
     Icon,
     IconButton,
+<<<<<<< HEAD
     IDropdownOption,
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
     Label,
     PrimaryButton,
     Selection,
@@ -21,12 +24,15 @@ import * as React from "react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRFQ } from "../../../../hooks/useRFQ";
+<<<<<<< HEAD
 import { useUser } from "../../../../hooks";
 import AppContext from "../../../../AppContext";
 import { getAADClient } from "../../../../pnpjsConfig";
 import { CONST } from "../../../../config/const";
 import { AadHttpClient } from "@microsoft/sp-http";
 import { useUsers } from "../../../../hooks/useUsers";
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
 
 // 定义接口
@@ -47,12 +53,16 @@ interface Item {
 }
 
 const RFQ: React.FC = () => {
+<<<<<<< HEAD
     const [, supplierId, , getSupplierId] = useUsers() ;
     let userEmail = "";
     const [isFetchingRFQ, allRFQs, , getAllRFQs, , , ,] = useRFQ();
     const {getUserType} =useUser();
     const [userType, setUserType] = useState<string>("Unknown");
     
+=======
+    const [isFetching, allRFQs, , getAllRFQs, , , ,] = useRFQ();
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
     // const [
     //     ,
     //     allRequisitions,
@@ -77,7 +87,11 @@ const RFQ: React.FC = () => {
         rfqtype: '',
         buyer: '',
         section: '',
+<<<<<<< HEAD
         status: [],
+=======
+        status: '',
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
         parma: '',
         rfqreleasedatefrom: '',
         rfqreleasedateto: '',
@@ -89,7 +103,11 @@ const RFQ: React.FC = () => {
         rfqtype: '',
         buyer: '',
         section: '',
+<<<<<<< HEAD
         status: [] as string[],
+=======
+        status: '',
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
         parma: '',
         rfqreleasedatefrom: '',
         rfqreleasedateto: '',
@@ -105,7 +123,11 @@ const RFQ: React.FC = () => {
         { key: "Price Change", text: "Price Change" },
     ];
     const statusOptions = [
+<<<<<<< HEAD
         
+=======
+        { key: "", text: "All" },
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
         { key: "New", text: "New" },
         { key: "In Progress", text: "In Progress" },
         { key: "Sent to GPS", text: "Sent to GPS" },
@@ -165,6 +187,7 @@ const RFQ: React.FC = () => {
     const toggleSearchBar = (): void => {
         setIsSearchVisible(!isSearchVisibel);
     };
+<<<<<<< HEAD
 
     const buttonStyles = {
         root: {
@@ -306,6 +329,29 @@ const RFQ: React.FC = () => {
     // }, [getUserType]);
     
 
+=======
+
+    const buttonStyles = {
+        root: {
+            backgroundColor: "#99CCFF", // 设置按钮背景色，类似浅蓝色
+            color: "black", // 设置文字颜色为黑色
+            width: "100px", // 设置按钮宽度
+            height: "36px", // 设置按钮高度
+            border: "none", // 去掉边框
+            borderRadius: "4px", // 设置按钮的圆角
+        },
+        rootHovered: {
+            backgroundColor: "#0F6CBD", // 设置悬停时的背景色，更深的蓝色
+            color: "white",
+        },
+        rootPressed: {
+            backgroundColor: "#0F6CBD",
+        },
+    };
+
+
+
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
     // 创建 Selection 对象
     const selection = React.useRef<Selection>(new Selection({
         onSelectionChanged: () => {
@@ -315,11 +361,15 @@ const RFQ: React.FC = () => {
             setIsItemSelected(selected.length > 0);
             // console.log("isselected: ", isItemSelected)
             console.log("Selected item: ", selected);
+<<<<<<< HEAD
             
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
         },
     }));
 
+<<<<<<< HEAD
     React.useEffect(() => {
         if (userDetails.role === "Manager") {
             setAppliedFilters((prev) => ({
@@ -329,6 +379,9 @@ const RFQ: React.FC = () => {
         } 
         console.log("UserDetials: ", userDetails)
       }, [userDetails]);
+=======
+
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
     React.useEffect(() => {
         getAllRFQs();
@@ -336,7 +389,11 @@ const RFQ: React.FC = () => {
 
 
 
+<<<<<<< HEAD
     const applyFilters = () :void=> {
+=======
+    const applyFilters = () => {
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
         setAppliedFilters({
             ...searchConditions,
@@ -350,6 +407,7 @@ const RFQ: React.FC = () => {
             rfqduedateto: rfqDueDateTo ? new Date(rfqDueDateTo.getTime() + 86400000).toISOString() : "",
         });
     };
+<<<<<<< HEAD
     
     const handleMultiSelectChange = <K extends keyof typeof searchConditions>(
         key: K,
@@ -367,6 +425,8 @@ const RFQ: React.FC = () => {
         });
     };
     
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
     const getFilteredItems = () => {
         return allRFQs.filter(item => {
@@ -385,6 +445,7 @@ const RFQ: React.FC = () => {
             const dueTo = appliedFilters.rfqduedateto
                 ? new Date(appliedFilters.rfqduedateto)
                 : null;
+<<<<<<< HEAD
             // 更新 status 过滤逻辑
         const statusFilter = appliedFilters.status.length === 0
         ? true // 如果没有选择任何状态，表示不过滤
@@ -399,6 +460,15 @@ const RFQ: React.FC = () => {
                 (!appliedFilters.buyer || (item.BuyerInfo?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) || item.HandlerName?.toLowerCase().includes(appliedFilters.buyer.toLowerCase())) &&
                 (!appliedFilters.section || item.SectionInfo?.toLowerCase().includes(appliedFilters.section.toLowerCase())) &&
                 (!appliedFilters.parma || item.Parma?.toLowerCase().includes(appliedFilters.parma.toLowerCase())) &&
+=======
+            return (
+                (!appliedFilters.rfqtype || item.RFQType === appliedFilters.rfqtype) &&
+                (!appliedFilters.rfqno || item.RFQNo?.includes(appliedFilters.rfqno)) &&
+                (!appliedFilters.buyer || item.BuyerInfo?.includes(appliedFilters.buyer)) &&
+                (!appliedFilters.section || item.HandlerName?.includes(appliedFilters.section)) &&
+                (!appliedFilters.status || item.RFQStatus?.includes(appliedFilters.status)) &&
+                (!appliedFilters.parma || item.Parma?.includes(appliedFilters.parma)) &&
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                 (!releaseFrom ||
                     (releaseDate >= releaseFrom)) &&
                 (!releaseTo ||
@@ -457,7 +527,10 @@ const RFQ: React.FC = () => {
     };
 
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 
     React.useEffect(() => {
         if (allRFQs.length > 0) {
@@ -558,7 +631,10 @@ const RFQ: React.FC = () => {
                             padding: 20,
                             display: "grid",
                             gridTemplateColumns: "repeat(5, 1fr)", // 五等分
+<<<<<<< HEAD
                             gridTemplateRows: "auto auto auto", // 固定为 3 行
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                             gap: "10px",
                         },
                     }}
@@ -567,7 +643,10 @@ const RFQ: React.FC = () => {
 
                     <Dropdown
                         label="Type"
+<<<<<<< HEAD
                         placeholder="Optional"
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                         selectedKey={searchConditions.rfqtype}
                         onChange={(e, option) => handleSearchChange('rfqtype', option?.key?.toString() as string || '')}
                         options={typeOptions}
@@ -599,6 +678,7 @@ const RFQ: React.FC = () => {
                     )}
                     <Dropdown
                         label="Status"
+<<<<<<< HEAD
                         selectedKeys={searchConditions.status}
                         multiSelect
                         onChange={(e, option) => {if(option)
@@ -606,17 +686,30 @@ const RFQ: React.FC = () => {
                             handleMultiSelectChange('status', option)}}
                         options={statusOptions}
                          
+=======
+                        selectedKey={searchConditions.status}
+                        onChange={(e, option) => handleSearchChange('status', option?.key?.toString() || "")}
+                        options={statusOptions}
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                         styles={fieldStyles}
                     />
 
                     {/* 第二行 */}
 
+<<<<<<< HEAD
                     {userType === "Member" && (<TextField
+=======
+                    <TextField
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                         label="Parma"
                         value={searchConditions.parma}
                         onChange={(e, newValue) => handleSearchChange('parma', newValue || "")}
                         styles={fieldStyles}
+<<<<<<< HEAD
                     />)}
+=======
+                    />
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                     <DatePicker
                         label="RFQ Release Date From"
                         value={rfqReleaseDateFrom}
@@ -650,7 +743,11 @@ const RFQ: React.FC = () => {
                     />
 
                     {/* 搜索按钮 */}
+<<<<<<< HEAD
                     <Stack.Item style={{ gridRow:"3",gridColumn: "5", justifySelf: "end" }}>
+=======
+                    <Stack.Item style={{ gridColumn: "5", justifySelf: "end" }}>
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                         <PrimaryButton
                             text="Search"
                             styles={buttonStyles}
@@ -661,7 +758,11 @@ const RFQ: React.FC = () => {
             )}
 
             {/* 结果展示区域 */}
+<<<<<<< HEAD
             {isFetchingRFQ ? (
+=======
+            {isFetching ? (
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                 <Spinner label={t("Loading...")} size={SpinnerSize.large} />
             ) : (
                 <Stack>

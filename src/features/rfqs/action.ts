@@ -298,6 +298,10 @@ export const createRFQAction = createAsyncThunk(
           RFQStatus: rfq.RFQStatus,
           BuyerInfo: rfq.BuyerInfo,
           SectionInfo: rfq.SectionInfo,
+<<<<<<< HEAD
+=======
+          Comment: rfq.Comment,
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
           CommentHistory: rfq.CommentHistory,
           RequisitionIds: rfq.RequisitionIds,
           QuoteReceivedDate: rfq.QuoteReceivedDate,

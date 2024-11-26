@@ -26,7 +26,10 @@ import { AadHttpClient } from "@microsoft/sp-http";
 import { CONST } from "../../../../config/const";
 import { useRFQ } from "../../../../hooks/useRFQ";
 import { useDocument } from "../../../../hooks";
+<<<<<<< HEAD
 import { useRequisition } from "../../../../hooks/useRequisition";
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetchData = async (parmaValue: string): Promise<any> => {
   try {
@@ -275,6 +278,7 @@ const Requisition: React.FC = () => {
         Parma: form.parma,
       };
       const newRFQId = await createRFQ(rfqData);
+<<<<<<< HEAD
       state.selectedItems.forEach((item: any) => {
         updateRequisition({
           ...item,
@@ -282,6 +286,8 @@ const Requisition: React.FC = () => {
           Parma: form.parma
         })
       })
+=======
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
       // 上传文件
       console.log("Fetched data on blur:", selectedFiles);
       if (selectedFiles.length > 0) {

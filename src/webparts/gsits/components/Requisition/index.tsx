@@ -90,11 +90,18 @@ const Requisition: React.FC = () => {
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     canSelectItem: (item: any) => {
+<<<<<<< HEAD
 
       // const arr: Item[] = selection.getSelection()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       // 如果 Parma 有值，返回 false，否则返回 true //&& item.handler === userDetails.handlercode;
       return !item.Parma
+=======
+      const arr: Item[] = selection.getSelection()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const length = arr.filter((val:any) => val.RequisitionType !== item.RequisitionType).length
+      return length === 0
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
     },
     onSelectionChanged: () => {
       if(status.current) return
@@ -344,14 +351,22 @@ const Requisition: React.FC = () => {
         createdDateFrom,
         createdDateTo,
       } = filters;
-
       return (
+<<<<<<< HEAD
           (requisitionType.length === 0 || requisitionType.includes(item.RequisitionType)) &&
           (!buyer || (item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase()))) &&
           (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
           (!section ||
               item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
           (status.length===0 || status.includes(item.Status)) &&
+=======
+          (!requisitionType || item.RequisitionType === requisitionType) &&
+          (!buyer || item.ReqBuyer.toLowerCase().includes(buyer.toLowerCase()) || item.HandlerName.toLowerCase().includes(buyer.toLowerCase())) &&
+          (!parma || item.Parma?.toLowerCase().includes(parma.toLowerCase())) &&
+          (!section ||
+              item.Section.toLowerCase().includes(section.toLowerCase()) || item.SectionDescription.toLowerCase().includes(section.toLowerCase()) ) &&
+          (!status || status.includes(item.Status)) &&
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
           (!partNumber ||
               item.PartNumber.toLowerCase().includes(partNumber.toLowerCase())) &&
           (!qualifier || item.Qualifier === qualifier) &&
@@ -860,6 +875,7 @@ const Requisition: React.FC = () => {
                     height: 0,
                     width: 0,
                   }}
+<<<<<<< HEAD
                   // onRenderDetailsFooter={() => {
                   //   const el = document.getElementsByClassName("ms-DetailsHeader")[0];
                   //   const width = (el && el.clientWidth) || "100%";
@@ -867,6 +883,30 @@ const Requisition: React.FC = () => {
 
                   //   );
                   // }}
+=======
+                  onRenderDetailsFooter={() => {
+                    const el = document.getElementsByClassName("ms-DetailsHeader")[0];
+                    const width = (el && el.clientWidth) || "100%";
+                    return (
+                        <div
+                            style={{
+                              width: width,
+                              height: "30px",
+                              backgroundColor: "#BDBDBD",
+                              justifyContent: "flex-end", // 让内容靠右对齐
+                              alignItems: "right",      // 垂直居中对齐
+                            }}
+                        >
+                          <Pagination
+                              totalItems={filteredItems.length}
+                              pageSize={PAGE_SIZE}
+                              currentPage={currentPage}
+                              onPageChange={handlePageChange}
+                          />
+                        </div>
+                    );
+                  }}
+>>>>>>> 1b84c9ff7e472794773c3608bf943865b1c1b33f
                   selectionPreservedOnEmptyClick={true}
                   ariaLabelForSelectionColumn="Toggle selection"
                   ariaLabelForSelectAllCheckbox="Toggle selection for all items"
